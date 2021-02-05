@@ -1,4 +1,4 @@
-﻿namespace HassKnxConfigFileGenerator.Knx
+﻿namespace Common.Knx
 {
   /// <summary>
   /// A KNX Group Address

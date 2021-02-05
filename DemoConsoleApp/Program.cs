@@ -1,7 +1,7 @@
 ﻿using HassKnxConfigFileGenerator;
 using HassKnxConfigFileGenerator.DeviceTypeDefinitions;
-using HassKnxConfigFileGenerator.Knx;
 using System.Collections.Generic;
+using Common.Knx;
 
 namespace DemoConsoleApp
 {

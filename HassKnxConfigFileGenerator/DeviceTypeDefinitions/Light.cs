@@ -1,4 +1,4 @@
-﻿using HassKnxConfigFileGenerator.Knx;
+﻿using Common.Knx;
 
 namespace HassKnxConfigFileGenerator.DeviceTypeDefinitions
 {
