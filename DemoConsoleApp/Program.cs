@@ -20,15 +20,17 @@ namespace DemoConsoleApp
       {
         new Light()
         {
-          Name = "Testleuchte",
+          Name = "Schalten TestLeuchte",
           Address = new GroupAddress(1, 2, 23),
           StateAddress = new GroupAddress(1, 2, 24)
         },
         new Light()
         {
-          Name = "Deckenleuchte",
+          Name = "Dimmen Deckenleuchte",
           Address = new GroupAddress(2, 2, 13),
-          StateAddress = new GroupAddress(2, 2, 14)
+          StateAddress = new GroupAddress(2, 2, 14),
+          BrightnessAddress = new GroupAddress(2, 3, 15),
+          BrightnessStateAddress = new GroupAddress(2, 3, 16)
         }
 
       };
