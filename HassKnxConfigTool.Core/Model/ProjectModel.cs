@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.ObjectModel;
 
 namespace HassKnxConfigTool.Core.Model
@@ -7,10 +8,11 @@ namespace HassKnxConfigTool.Core.Model
   {
     public string Name { get; set; }
 
-    ObservableCollection<LayerModel> Layers { get; set; }
+    public ObservableCollection<LayerModel> Layers { get; set; }
 
     public DateTime LastSaved { get; set; }
 
+    [JsonIgnore]
     public bool HasUnsavedChanges { get; set; }
 
     public ProjectModel()

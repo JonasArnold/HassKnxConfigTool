@@ -5,13 +5,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:local="clr-namespace:HassKnxConfigTool.Wpf.Views"
+             xmlns:devicetypes="clr-namespace:Common.DeviceTypes;assembly=Common"
              xmlns:converters="clr-namespace:HassKnxConfigTool.Wpf.Converters"
              xmlns:models="clr-namespace:HassKnxConfigTool.Core.Model;assembly=HassKnxConfigTool.Core"
+             xmlns:xctk="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
              mc:Ignorable="d" 
              FontSize="15"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <converters:LayerDeviceConverter x:Key="ldConverter"/>
+        <converters:EnumDescriptionConverter x:Key="descConverter"/>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -21,53 +24,92 @@
 
         <TreeView x:Name="treeViewLayers" 
                   Grid.Column="0"
-                  ItemsSource="{Binding Layers}">
+                  ItemsSource="{Binding Layers}"
+                  Margin="10">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectedItemChanged">
                     <i:InvokeCommandAction Command="{Binding SelectedItemChangedCommand}" CommandParameter="{Binding ElementName=treeViewLayers, Path=SelectedItem}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
             <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type models:LayerModel}"> <!--ItemsSource="{Binding SubLayers}">-->
+                <HierarchicalDataTemplate DataType="{x:Type models:LayerModel}">
+                    <!--ItemsSource="{Binding SubLayers}">-->
                     <HierarchicalDataTemplate.ItemsSource>
                         <MultiBinding Converter="{StaticResource ldConverter}">
                             <Binding Path="SubLayers"/>
                             <Binding Path="Devices"/>
-                            <Binding Path="SubLayers.Count"/> <!-- Just to update automatically -->
-                            <Binding Path="Devices.Count"/>  <!-- Just to update automatically -->
+                            <Binding Path="SubLayers.Count"/>
+                            <!-- Just to update automatically -->
+                            <Binding Path="Devices.Count"/>
+                            <!-- Just to update automatically -->
                         </MultiBinding>
                     </HierarchicalDataTemplate.ItemsSource>
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="/UserInterface;component/Images/mainlayer.png" Margin="0,0,5,0" />
+                        <Image Source="/HassKnxConfigTool.Wpf;component/Assets/layer.png" Height="20" Stretch="Uniform" Margin="0,0,5,0" />
                         <TextBlock Text="{Binding Name}" />
                         <TextBlock Text=" [" Foreground="Blue" />
                         <TextBlock Text="{Binding SubLayers.Count}" Foreground="Blue" />
                         <TextBlock Text="]" Foreground="Blue" />
                     </StackPanel>
                 </HierarchicalDataTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type models:DeviceModel}">
+                <DataTemplate DataType="{x:Type models:DeviceModel}">
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="/UserInterface;component/Images/mainlayer.png" Margin="0,0,5,0" />
+                        <Image Source="/HassKnxConfigTool.Wpf;component/Assets/device_hub.png" Height="20" Stretch="Uniform" Margin="0,0,5,0" />
                         <TextBlock Text="{Binding Name}" />
                     </StackPanel>
-                </HierarchicalDataTemplate>
+                </DataTemplate>
             </TreeView.Resources>
         </TreeView>
 
         <StackPanel Grid.Column="1" Orientation="Vertical">
-            <Label Content="New Device Name"/>
-            <TextBox x:Name="tbAddDeviceName" Text="{Binding NewDeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" />
-            <Button Name="btnAddDevice" Command="{Binding AddDeviceCommand}" IsEnabled="{Binding CanAddDevice}" Content="Add New Device" Margin="5"/>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                <Label Content="Layer" Margin="0 10 0 0"/>
+                <Button Name="btnAddLayer" Command="{Binding AddLayerCommand}" IsEnabled="{Binding CanAddLayer}" 
+                        Width="20" Height="20" VerticalAlignment="Bottom" Margin="5">
+                    <TextBlock Text="+" Margin="0,-4,0,0" />
+                </Button>
+                <Button Name="btnRemLayer" Command="{Binding RemoveLayerCommand}" IsEnabled="{Binding CanRemoveLayer}" 
+                        Width="20" Height="20" VerticalAlignment="Bottom" Margin="5">
+                    <TextBlock Text="-" Margin="0,-4,0,0" />
+                </Button>
+            </StackPanel>
+            <xctk:WatermarkTextBox Watermark="New Layer Name" x:Name="tbAddLayerName" Text="{Binding NewLayerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" />
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                <Label Content="Sub Layer" Margin="0 10 0 0"/>
+                <Button Name="btnAddSubLayer" Command="{Binding AddSubLayerCommand}" IsEnabled="{Binding CanAddSubLayer}" 
+                        Width="20" Height="20" VerticalAlignment="Bottom" Margin="5">
+                    <TextBlock Text="+" Margin="0,-4,0,0" />
+                </Button>
+                <Button Name="btnRemSubLayer" Command="{Binding RemoveLayerCommand}" IsEnabled="{Binding CanRemoveLayer}" 
+                        Width="20" Height="20" VerticalAlignment="Bottom" Margin="5">
+                    <TextBlock Text="-" Margin="0,-4,0,0" />
+                </Button>
+            </StackPanel>
+            <xctk:WatermarkTextBox Watermark="New Sub Layer Name" x:Name="tbAddSubLayerName" Text="{Binding NewSubLayerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" />
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                <Label Content="Device" Margin="0 10 0 0"/>
+                <Button Name="btnAddDevice" Command="{Binding AddDeviceCommand}" IsEnabled="{Binding CanAddDevice}" 
+                        Width="20" Height="20" VerticalAlignment="Bottom" Margin="5">
+                    <TextBlock Text="+" Margin="0,-4,0,0" />
+                </Button>
+                <Button Name="btnRemDevice" Command="{Binding RemoveDeviceCommand}" IsEnabled="{Binding CanRemoveDevice}" 
+                        Width="20" Height="20" VerticalAlignment="Bottom" Margin="5">
+                    <TextBlock Text="-" Margin="0,-4,0,0" />
+                </Button>
+            </StackPanel>
+            <Label Content="Type:"/>
+            <ComboBox Margin="5 0" ItemsSource="{Binding DeviceTypeValues}" SelectedItem="{Binding SelectedDeviceType}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource descConverter}}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <xctk:WatermarkTextBox Watermark="New Device Name" x:Name="tbAddDeviceName" Text="{Binding NewDeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" />
             
-            <Label Content="New Layer Name" Margin="0 10 0 0"/>
-            <TextBox x:Name="tbAddLayerName" Text="{Binding NewLayerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" />
-            <Button Name="btnAddLayer" Command="{Binding AddLayerCommand}" IsEnabled="{Binding CanAddLayer}" Content="Add New Layer" Margin="5"/>
-
-            <Label Content="New Sub Layer Name" Margin="0 10 0 0"/>
-            <TextBox x:Name="tbAddSubLayerName" Text="{Binding NewSubLayerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" />
-            <Button Name="btnAddSubLayer" Command="{Binding AddSubLayerCommand}" IsEnabled="{Binding CanAddSubLayer}" Content="Add New Sub Layer" Margin="5"/>
-
         </StackPanel>
-        
+
     </Grid>
 </UserControl>

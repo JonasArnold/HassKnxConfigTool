@@ -18,12 +18,10 @@ namespace HassKnxConfigTool.Wpf
     public MainWindow()
     {
       InitializeComponent();
-      this.TabList = new ObservableCollection<ViewModelBase>
-      {
-        new ProjectsViewModel(this),
-        new EditorViewModel(this)
-      };
+      var pvm = new ProjectsViewModel(this);
+      var evm = new EditorViewModel(this, pvm);
 
+      this.TabList = new ObservableCollection<ViewModelBase> { pvm, evm };
       this.tabControlMain.ItemsSource = this.TabList;
     }
 

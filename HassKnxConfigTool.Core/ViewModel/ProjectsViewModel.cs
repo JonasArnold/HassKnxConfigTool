@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace HassKnxConfigTool.Core.ViewModel
 {
-  public class ProjectsViewModel : ViewModelBase
+  public class ProjectsViewModel : ViewModelBase, IProjectChangedNotifier
   {
     public string Header => "Projects";
     private readonly IUiService uiService;
@@ -105,6 +105,7 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
     }
 
+    public event EventHandler<ProjectModel> SelectedProjectChanged;
     private ProjectModel _selectedProject;
     public ProjectModel SelectedProject
     {
@@ -115,11 +116,16 @@ namespace HassKnxConfigTool.Core.ViewModel
         {
           this.SaveProject(); // first save
         }
-        _selectedProject = value;
+        _selectedProject = value;  // set new value
+        if (_selectedProject != null)
+        {
+          SelectedProjectChanged?.Invoke(this, _selectedProject); // inform Editor View Model
+        }
         OnPropertyChanged(nameof(SelectedProject));
         OnPropertyChanged(nameof(CanSaveProject));
       }
     }
+
     #endregion
 
     #region Helpers

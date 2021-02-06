@@ -7,9 +7,9 @@
         xmlns:views="clr-namespace:HassKnxConfigTool.Wpf.Views"
         xmlns:vm="clr-namespace:HassKnxConfigTool.Core.ViewModel;assembly=HassKnxConfigTool.Core"
         mc:Ignorable="d" 
-        FontSize="15"
+        FontSize="15" Icon="/Assets/compare.ico"
         Title="HomeAssistant KNX Configuration Tool" 
-        Height="700" Width="1200" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Height="700" Width="1200" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" >
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
