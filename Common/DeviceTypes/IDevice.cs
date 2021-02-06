@@ -1,4 +1,4 @@
-﻿namespace Common.Structure
+﻿namespace Common.DeviceTypes
 {
   public interface IDevice
   {

@@ -1,12 +1,8 @@
-﻿using Common.Structure;
-using HassKnxConfigTool.Core.Model;
+﻿using HassKnxConfigTool.Core.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace HassKnxConfigTool.Wpf.Converters

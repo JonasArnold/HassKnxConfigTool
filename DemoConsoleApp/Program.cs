@@ -1,5 +1,4 @@
 ﻿using HassKnxConfigFileGenerator;
-using HassKnxConfigFileGenerator.DeviceTypeDefinitions;
 using System.Collections.Generic;
 using Common.Knx;
 

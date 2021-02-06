@@ -6,10 +6,17 @@
         xmlns:local="clr-namespace:HassKnxConfigTool.Wpf"
         xmlns:views="clr-namespace:HassKnxConfigTool.Wpf.Views"
         xmlns:vm="clr-namespace:HassKnxConfigTool.Core.ViewModel;assembly=HassKnxConfigTool.Core"
-        mc:Ignorable="d"
-        Title="HomeAssistant KNX Configuration Tool" Height="450" Width="800">
+        mc:Ignorable="d" 
+        FontSize="15"
+        Title="HomeAssistant KNX Configuration Tool" 
+        Height="700" Width="1200" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Grid>
-        <TabControl x:Name="tabControlMain">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        
+        <TabControl Grid.Row="0" x:Name="tabControlMain">
             <TabControl.ItemContainerStyle>
                 <Style TargetType="{x:Type TabItem}">
                     <Setter Property="Header" Value="{Binding Header}" />
@@ -17,12 +24,16 @@
             </TabControl.ItemContainerStyle>
             <TabControl.Resources>
                 <DataTemplate DataType="{x:Type vm:ProjectsViewModel}">
-                    <views:ProjectView />
+                    <views:ProjectsView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:EditorViewModel}">
                     <views:EditorView />
                 </DataTemplate>
             </TabControl.Resources>
         </TabControl>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBlock x:Name="tbBottomMessage" FontSize="15" Margin="10 5"/>
+        </StackPanel>
     </Grid>
 </Window>

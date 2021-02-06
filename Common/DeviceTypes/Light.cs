@@ -1,8 +1,7 @@
 ﻿using Common.Attributes;
 using Common.Knx;
-using Common.Structure;
 
-namespace HassKnxConfigFileGenerator.DeviceTypeDefinitions
+namespace Common.DeviceTypes
 {
   /// <summary>
   /// The knx light integration is used as an interface to control KNX actuators for lighting applications such as:

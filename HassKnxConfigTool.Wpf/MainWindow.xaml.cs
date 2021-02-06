@@ -3,6 +3,7 @@ using HassKnxConfigTool.Core.ViewModel;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Media;
 
 namespace HassKnxConfigTool.Wpf
 {
@@ -14,29 +15,43 @@ namespace HassKnxConfigTool.Wpf
 
     public ObservableCollection<ViewModelBase> TabList { get; set; }
 
-    //private readonly ProjectsViewModel projectVM;
-    //private readonly EditorViewModel editorVM;
-
     public MainWindow()
     {
       InitializeComponent();
-      this.TabList = new ObservableCollection<ViewModelBase>();
-      this.TabList.Add(new ProjectsViewModel(this));
-      this.TabList.Add(new EditorViewModel(this));
+      this.TabList = new ObservableCollection<ViewModelBase>
+      {
+        new ProjectsViewModel(this),
+        new EditorViewModel(this)
+      };
 
       this.tabControlMain.ItemsSource = this.TabList;
     }
 
-    //private void TabControlMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    //{
-    //  if (ProjectsTab.IsSelected)
-    //  {
-    //    this.DataContext = this.projectVM;
-    //  }
-    //  if (EditorTab.IsSelected)
-    //  {
-    //    this.DataContext = this.editorVM;
-    //  }
-    //}
+    public void DisplayBottomMessage(MessageSeverity severity, string message)
+    {
+      Brush col;
+      switch (severity)
+      {
+        case MessageSeverity.Success:
+          col = Brushes.Green;
+          break;
+        case MessageSeverity.Warning:
+          col = Brushes.Orange;
+          break;
+        case MessageSeverity.Error:
+          col = Brushes.Red;
+          break;
+        case MessageSeverity.Information:
+          col = Brushes.Blue;
+          break;
+        case MessageSeverity.Unknown:
+        default:
+          col = Brushes.DarkGray;
+          break;
+      }
+
+      tbBottomMessage.Foreground = col;
+      tbBottomMessage.Text = message;
+    }
   }
 }

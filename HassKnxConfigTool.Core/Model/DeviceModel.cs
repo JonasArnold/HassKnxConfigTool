@@ -1,5 +1,4 @@
-﻿using Common.Structure;
-using System.Collections.ObjectModel;
+﻿using Common.DeviceTypes;
 
 namespace HassKnxConfigTool.Core.Model
 {
@@ -7,6 +6,6 @@ namespace HassKnxConfigTool.Core.Model
   {
     public string Name { get; set; }
 
-    //public ObservableCollection<ILayer> SubLayers { get; }
+    public IDevice Device { get; }
   }
 }

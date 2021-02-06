@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
+﻿using System.Collections.ObjectModel;
 using Common.Mvvm;
 using HassKnxConfigTool.Core.Model;
-using MvvmCross.Commands;
-using MvvmCross.ViewModels;
 
 namespace HassKnxConfigTool.Core.ViewModel
 {
@@ -19,6 +15,7 @@ namespace HassKnxConfigTool.Core.ViewModel
       this.uiService = uiService;
     }
 
+    #region Commands
     private void WireCommands()
     {
       AddDeviceCommand = new RelayCommand(AddDevice);
@@ -27,29 +24,8 @@ namespace HassKnxConfigTool.Core.ViewModel
       SelectedItemChangedCommand = new RelayCommand<object>((o) => SelectedItemChanged(o));
     }
 
-    public RelayCommand AddDeviceCommand
-    {
-      get;
-      private set;
-    }
-
-    public RelayCommand AddLayerCommand
-    {
-      get;
-      private set;
-    }
-
-    public RelayCommand AddSubLayerCommand
-    {
-      get;
-      private set;
-    }
-    public RelayCommand<object> SelectedItemChangedCommand
-    {
-      get;
-      private set;
-    }
-
+    public RelayCommand AddDeviceCommand { get; private set; }
+    public bool CanAddDevice => string.IsNullOrEmpty(NewDeviceName) == false;
     public void AddDevice()
     {
       DeviceModel d = new DeviceModel
@@ -60,6 +36,8 @@ namespace HassKnxConfigTool.Core.ViewModel
       SelectedLayer.Devices.Add(d);
     }
 
+    public RelayCommand AddLayerCommand { get; private set; }
+    public bool CanAddLayer => string.IsNullOrEmpty(NewLayerName) == false;
     public void AddLayer()
     {
       LayerModel l = new LayerModel
@@ -70,6 +48,8 @@ namespace HassKnxConfigTool.Core.ViewModel
       Layers.Add(l);
     }
 
+    public RelayCommand AddSubLayerCommand { get; private set; }
+    public bool CanAddSubLayer => SelectedLayer != null && SelectedLayer is LayerModel;
     public void AddSubLayer()
     {
       LayerModel sl = new LayerModel
@@ -83,8 +63,19 @@ namespace HassKnxConfigTool.Core.ViewModel
     }
 
 
-    private ObservableCollection<LayerModel> _layers = new ObservableCollection<LayerModel>();
+    public RelayCommand<object> SelectedItemChangedCommand { get; private set; }
+    private void SelectedItemChanged(object arg)
+    {
+      if(arg is LayerModel layer)
+      {
+        SelectedLayer = layer;
+      }
+    }
 
+    #endregion
+
+    #region Properties
+    private ObservableCollection<LayerModel> _layers = new ObservableCollection<LayerModel>();
     public ObservableCollection<LayerModel> Layers
     {
       get { return _layers; }
@@ -95,9 +86,7 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
     }
 
-
     private ObservableCollection<DeviceModel> _devices = new ObservableCollection<DeviceModel>();
-
     public ObservableCollection<DeviceModel> Devices
     {
       get { return _devices; }
@@ -109,7 +98,6 @@ namespace HassKnxConfigTool.Core.ViewModel
     }
 
     private LayerModel _selectedLayer;
-
     public LayerModel SelectedLayer
     {
       get { return _selectedLayer; }
@@ -120,9 +108,7 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
     }
 
-
     private string _newDeviceName;
-
     public string NewDeviceName
     {
       get { return _newDeviceName; }
@@ -135,7 +121,6 @@ namespace HassKnxConfigTool.Core.ViewModel
     }
 
     private string _newLayerName;
-
     public string NewLayerName
     {
       get { return _newLayerName; }
@@ -148,7 +133,6 @@ namespace HassKnxConfigTool.Core.ViewModel
     }
 
     private string _newSubLayerName;
-
     public string NewSubLayerName
     {
       get { return _newSubLayerName; }
@@ -159,20 +143,6 @@ namespace HassKnxConfigTool.Core.ViewModel
         OnPropertyChanged(nameof(CanAddSubLayer));
       }
     }
-
-
-    public bool CanAddLayer => string.IsNullOrEmpty(NewLayerName) == false;
-
-    public bool CanAddDevice => string.IsNullOrEmpty(NewDeviceName) == false;
-
-    public bool CanAddSubLayer => SelectedLayer != null && SelectedLayer is LayerModel;
-
-    private void SelectedItemChanged(object arg)
-    {
-      if(arg is LayerModel layer)
-      {
-        SelectedLayer = layer;
-      }
-    }
+    #endregion
   }
 }
