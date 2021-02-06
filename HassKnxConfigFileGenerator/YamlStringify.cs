@@ -1,7 +1,7 @@
-﻿using HassKnxConfigFileGenerator.DeviceTypeDefinitions;
+﻿using Common.Attributes;
 using System;
 
-namespace HassKnxConfigFileGenerator.Helpers
+namespace HassKnxConfigFileGenerator
 {
   /// <summary>
   /// Creates yaml strings out of C# instances.

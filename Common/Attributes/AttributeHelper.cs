@@ -3,12 +3,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace HassKnxConfigFileGenerator.Helpers
+namespace Common.Attributes
 {
   /// <summary>
   /// Helps with reading out specific attributes assigned to properties.
   /// </summary>
-  internal class AttributeHelper
+  public class AttributeHelper
   {
     /// <summary>
     /// Reads out the attribute's value of a property. 

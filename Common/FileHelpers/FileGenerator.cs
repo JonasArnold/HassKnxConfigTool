@@ -2,12 +2,12 @@
 using System.IO;
 using System.Text;
 
-namespace HassKnxConfigFileGenerator.Helpers
+namespace Common.FileHelpers
 {
   /// <summary>
   /// File Generation Helper.
   /// </summary>
-  internal static class FileGenerator
+  public static class FileGenerator
   {
     /// <summary>
     /// Creates a file at the given filePath with the given content.
@@ -16,7 +16,7 @@ namespace HassKnxConfigFileGenerator.Helpers
     /// <param name="filePath">Example: @"c:\temp\MyTest.txt"</param>
     /// <param name="content">the content to write to the file</param>
     /// <exception cref="ArgumentException">If there exists already a file with this name.</exception>
-    internal static void CreateFile(string filePath, string content)
+    public static void CreateFile(string filePath, string content)
     {
       if (File.Exists(filePath))
       {

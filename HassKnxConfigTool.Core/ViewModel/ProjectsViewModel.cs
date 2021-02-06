@@ -1,28 +1,38 @@
-﻿using HassKnxConfigTool.Core.Model;
-using MvvmCross.Commands;
-using MvvmCross.ViewModels;
+﻿using Common.Mvvm;
+using HassKnxConfigTool.Core.Model;
+using System;
 using System.Collections.ObjectModel;
 
 namespace HassKnxConfigTool.Core.ViewModel
 {
-  public class ProjectsViewModel : MvxViewModel
+  public class ProjectsViewModel : ViewModelBase
   {
-    public ProjectsViewModel()
+    public string Header => "Projects";
+    private readonly IUiService uiService;
+
+    public ProjectsViewModel(IUiService uiService)
     {
-      AddProjectCommand = new MvxCommand(AddProject);
+      WireCommands();
+      this.uiService = uiService;
     }
 
-    public IMvxCommand AddProjectCommand { get; set; }
+    private void WireCommands()
+    {
+      AddProjectCommand = new RelayCommand(AddProject);
+    }
+
+    public RelayCommand AddProjectCommand
+    {
+      get;
+      private set;
+    }
 
     private ObservableCollection<ProjectModel> _projects = new ObservableCollection<ProjectModel>();
 
     public ObservableCollection<ProjectModel> Projects
     {
       get { return _projects; }
-      set
-      {
-        SetProperty(ref _projects, value);
-      }
+      set { _projects = value; }
     }
 
     public bool CanAddProject => string.IsNullOrEmpty(NewProjectName) == false;
@@ -34,8 +44,12 @@ namespace HassKnxConfigTool.Core.ViewModel
       get { return _newProjectName; }
       set
       {
-        SetProperty(ref _newProjectName, value);
-        RaisePropertyChanged(() => CanAddProject);
+        if (_newProjectName != value)
+        {
+          _newProjectName = value;
+          OnPropertyChanged(nameof(NewProjectName));
+          OnPropertyChanged(nameof(CanAddProject));
+        }
       }
     }
 

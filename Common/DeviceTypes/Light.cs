@@ -1,4 +1,6 @@
-﻿using Common.Knx;
+﻿using Common.Attributes;
+using Common.Knx;
+using Common.Structure;
 
 namespace HassKnxConfigFileGenerator.DeviceTypeDefinitions
 {
@@ -9,7 +11,7 @@ namespace HassKnxConfigFileGenerator.DeviceTypeDefinitions
   /// - LED controllers 
   /// - DALI gateways
   /// </summary>
-  public class Light
+  public class Light : IDevice
   {
     /// <summary>
     /// A name for this device used within Home Assistant.

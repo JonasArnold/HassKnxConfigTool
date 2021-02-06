@@ -6,6 +6,6 @@ namespace HassKnxConfigTool.Core.Model
   {
     public string Name { get; set; }
 
-    ObservableCollection<DeviceModel> DeviceTree { get; set; }
+    ObservableCollection<LayerModel> Layers { get; set; }
   }
 }

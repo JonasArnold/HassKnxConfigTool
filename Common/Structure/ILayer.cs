@@ -6,6 +6,8 @@ namespace Common.Structure
   {
     public string Name { get; set; }
 
-    ObservableCollection<ILayer> Members { get; }
+    ObservableCollection<ILayer> SubLayers { get; }
+
+    ObservableCollection<IDevice> Devices { get; }
   }
 }

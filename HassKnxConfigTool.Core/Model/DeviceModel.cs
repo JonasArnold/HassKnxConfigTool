@@ -3,10 +3,10 @@ using System.Collections.ObjectModel;
 
 namespace HassKnxConfigTool.Core.Model
 {
-  public class DeviceModel : ILayer
+  public class DeviceModel
   {
     public string Name { get; set; }
 
-    public ObservableCollection<ILayer> Members { get; }
+    //public ObservableCollection<ILayer> SubLayers { get; }
   }
 }

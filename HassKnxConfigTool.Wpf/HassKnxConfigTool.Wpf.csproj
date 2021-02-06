@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MvvmCross.Platforms.Wpf" Version="7.1.2" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\HassKnxConfigTool.Core\HassKnxConfigTool.Core.csproj" />
   </ItemGroup>
 

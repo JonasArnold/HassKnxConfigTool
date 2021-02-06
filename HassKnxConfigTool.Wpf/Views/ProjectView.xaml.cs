@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace HassKnxConfigTool.Wpf.Views
 {
   /// <summary>
-  /// Interaction logic for EditorView.xaml
+  /// Interaction logic for ProjectView.xaml
   /// </summary>
-  public partial class EditorView : UserControl
+  public partial class ProjectView : UserControl
   {
-    public EditorView()
+    public ProjectView()
     {
       InitializeComponent();
     }
