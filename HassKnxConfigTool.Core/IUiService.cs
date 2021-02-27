@@ -8,7 +8,6 @@ namespace HassKnxConfigTool.Core
 {
   public interface IUiService
   {
-
     void DisplayBottomMessage(MessageSeverity severity, string message);
   }
   public enum MessageSeverity

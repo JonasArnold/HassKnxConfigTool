@@ -8,6 +8,7 @@
              xmlns:devicetypes="clr-namespace:Common.DeviceTypes;assembly=Common"
              xmlns:converters="clr-namespace:HassKnxConfigTool.Wpf.Converters"
              xmlns:models="clr-namespace:HassKnxConfigTool.Core.Model;assembly=HassKnxConfigTool.Core"
+             xmlns:vm="clr-namespace:HassKnxConfigTool.Core.ViewModel;assembly=HassKnxConfigTool.Core"
              xmlns:xctk="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
              mc:Ignorable="d" 
              FontSize="15"
@@ -15,12 +16,19 @@
     <UserControl.Resources>
         <converters:LayerDeviceConverter x:Key="ldConverter"/>
         <converters:EnumDescriptionConverter x:Key="descConverter"/>
+        <DataTemplate DataType="{x:Type vm:LightDeviceViewModel}">
+            <local:LightDeviceView />
+        </DataTemplate>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10*"/>
             <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="3*"/>
+        </Grid.RowDefinitions>
 
         <TreeView x:Name="treeViewLayers" 
                   Grid.Column="0"
@@ -110,6 +118,8 @@
             <xctk:WatermarkTextBox Watermark="New Device Name" x:Name="tbAddDeviceName" Text="{Binding NewDeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" />
             
         </StackPanel>
+
+        <ContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding DeviceView}" />
 
     </Grid>
 </UserControl>

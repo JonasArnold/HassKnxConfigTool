@@ -4,6 +4,9 @@ namespace Common.DeviceTypes
 {
   public enum DeviceTypes
   {
+    [Description("")]
+    None, 
+
     [Description("Light")]
     Light,
 

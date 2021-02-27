@@ -13,6 +13,11 @@ namespace Common.DeviceTypes
   public class Light : IDevice
   {
     /// <summary>
+    /// Define device type.
+    /// </summary>
+    public DeviceTypes Type => DeviceTypes.Light;
+
+    /// <summary>
     /// A name for this device used within Home Assistant.
     /// /// </summary>
     [PropertyName("name")]

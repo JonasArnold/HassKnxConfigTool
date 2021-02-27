@@ -47,9 +47,23 @@ namespace HassKnxConfigTool.Core.ViewModel
     public bool CanAddDevice => SelectedItem != null && SelectedItem is LayerModel && string.IsNullOrEmpty(NewDeviceName) == false;
     public void AddDevice()
     {
+      IDevice newDevice;
+      switch (this.SelectedDeviceType)
+      {
+        case DeviceTypes.Light:
+          newDevice = new Light();
+          break;
+        case DeviceTypes.Switch:  //TODO
+        case DeviceTypes.BinarySensor:
+        case DeviceTypes.Scene:
+        case DeviceTypes.None:
+        default:
+          throw new Exception($"Cannot add Device with type {this.SelectedDeviceType}.");
+      }
       DeviceModel d = new DeviceModel
       {
-        Name = NewDeviceName
+        Name = NewDeviceName,
+        Device = newDevice
       };
       NewDeviceName = "";  // remove current text
 
@@ -58,7 +72,7 @@ namespace HassKnxConfigTool.Core.ViewModel
     }
 
     public RelayCommand RemoveDeviceCommand { get; private set; }
-    public bool CanRemoveDevice => SelectedItem != null && SelectedItem is DeviceModel;
+    public bool CanRemoveDevice => this.SelectedItemIsDevice;
     public void RemoveDevice()
     {
       // remove device for max. depth of 3
@@ -185,12 +199,19 @@ namespace HassKnxConfigTool.Core.ViewModel
       set
       {
         _selectedItem = value;
+        if (this.SelectedItemIsDevice)
+        {
+          this.SwitchDeviceView(((DeviceModel)this.SelectedItem).Device.Type);
+        }
+        else
+        {
+          this.SwitchDeviceView(DeviceTypes.None);
+        }
         OnPropertyChanged(nameof(CanAddLayer));
         OnPropertyChanged(nameof(CanAddSubLayer));
         OnPropertyChanged(nameof(CanAddDevice));
         OnPropertyChanged(nameof(CanRemoveLayer));
         OnPropertyChanged(nameof(CanRemoveDevice));
-
       }
     }
 
@@ -203,6 +224,24 @@ namespace HassKnxConfigTool.Core.ViewModel
         _newDeviceName = value;
         OnPropertyChanged(nameof(NewDeviceName));
         OnPropertyChanged(nameof(CanAddDevice));
+      }
+    }
+
+    private IDeviceViewModel _deviceView;
+    public IDeviceViewModel DeviceView
+    {
+      get { return _deviceView; }
+      set { if (_deviceView != value) { _deviceView = value; OnPropertyChanged(nameof(DeviceView)); } }
+    }
+
+    private IDevice _newDeviceInstance;
+    public IDevice NewDeviceInstance
+    {
+      get { return _newDeviceInstance; }
+      set
+      {
+        _newDeviceInstance = value;
+        OnPropertyChanged(nameof(NewDeviceInstance));
       }
     }
 
@@ -241,14 +280,15 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
     }
 
-    private DeviceTypes _selectedMyEnumType;
+    private DeviceTypes _selectedDeviceType;
     public DeviceTypes SelectedDeviceType
     {
-      get { return _selectedMyEnumType; }
+      get { return _selectedDeviceType; }
       set
       {
-        _selectedMyEnumType = value;
+        _selectedDeviceType = value;
         OnPropertyChanged(nameof(SelectedDeviceType));
+        this.SwitchDeviceView(_selectedDeviceType);
       }
     }
     #endregion
@@ -269,6 +309,29 @@ namespace HassKnxConfigTool.Core.ViewModel
       {
         this.SelectedDeviceType = this.DeviceTypeValues.First();
       }
+    }
+
+    private void SwitchDeviceView(DeviceTypes selectedDeviceType)
+    {
+      switch (selectedDeviceType)
+      {
+        case DeviceTypes.Light:
+          this.DeviceView = new LightDeviceViewModel();
+          break;
+        case DeviceTypes.None:
+          this.DeviceView = null;
+          break;
+        case DeviceTypes.Switch: /// TODO
+        case DeviceTypes.BinarySensor:
+        case DeviceTypes.Scene:
+        default:
+          throw new ArgumentOutOfRangeException("Newly selected device type has no view assigned.");
+      }
+    }
+
+    private bool SelectedItemIsDevice
+    {
+      get { return SelectedItem != null && SelectedItem is DeviceModel; }
     }
 
     #endregion

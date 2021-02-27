@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="HassKnxConfigTool.Wpf.Templates.KnxAddressUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:HassKnxConfigTool.Wpf.Templates"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Height="25">
+        <StackPanel Orientation="Horizontal">
+            <TextBox x:Name="tbMain" Width="30" Text="{Binding MainGroup}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox x:Name="tbMiddle" Width="30" Text="{Binding MiddleGroup}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox x:Name="tbSub" Width="30" Text="{Binding SubGroup}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

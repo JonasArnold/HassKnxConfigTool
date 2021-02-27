@@ -12,7 +12,7 @@ namespace HassKnxConfigTool.Core.Model
 
     public string Name { get; set; }
 
-    public IDevice Device { get; }
+    public IDevice Device { get; set; }
 
     /// <summary>
     /// Unique Identifier for this device
