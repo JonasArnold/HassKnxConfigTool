@@ -10,25 +10,39 @@ namespace Common.DeviceTypes
   /// - LED controllers 
   /// - DALI gateways
   /// </summary>
-  public class Light : IDevice
+  public class Light : BaseDevice
   {
-    /// <summary>
-    /// Define device type.
-    /// </summary>
-    public DeviceTypes Type => DeviceTypes.Light;
+    public Light()
+      :base(DeviceType.Light)
+    {
+      this.Address = new GroupAddress();
+      this.StateAddress = new GroupAddress();
+      this.BrightnessAddress = new GroupAddress();
+      this.BrightnessStateAddress = new GroupAddress();
+    }
 
+    private string name;
     /// <summary>
     /// A name for this device used within Home Assistant.
     /// /// </summary>
     [PropertyName("name")]
-    public string Name { get; set; }
+    public override string Name
+    {
+      get { return this.name; }
+      set { this.name = value; OnPropertyChanged(nameof(this.Name)); }
+    }
 
+    private GroupAddress address;
     /// <summary>
     /// KNX group address for switching the light on and off. 
     /// DPT 1.001
     /// </summary>
     [PropertyName("address")]
-    public GroupAddress Address { get; set; }
+    public GroupAddress Address
+    {
+      get { return this.address; }
+      set { this.address = value; OnPropertyChanged(nameof(this.Address)); }
+    }
 
     /// <summary>
     /// KNX group address for retrieving the switch state of the light. 

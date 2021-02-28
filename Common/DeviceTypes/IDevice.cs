@@ -1,8 +1,10 @@
-﻿namespace Common.DeviceTypes
+﻿using System.ComponentModel;
+
+namespace Common.DeviceTypes
 {
-  public interface IDevice
+  public interface IDevice : INotifyPropertyChanged
   {
-    public DeviceTypes Type { get; }
+    public DeviceType Type { get; }
     public string Name { get; set; }
   }
 }

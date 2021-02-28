@@ -1,34 +1,45 @@
-﻿namespace Common.Knx
+﻿using Common.Mvvm;
+using System.ComponentModel;
+
+namespace Common.Knx
 {
   /// <summary>
   /// A KNX Group Address
   /// Example: 1/1/12
   /// </summary>
-  public class GroupAddress
+  public class GroupAddress : ObservableObject
   {
+    private uint mainGroup;
     /// <summary>
     /// Main Group (Hauptgruppe)
     /// 0...31
     /// </summary>
-    public uint MainGroup { get; private set; }
+    public uint MainGroup
+    {
+      get { return this.mainGroup; }
+      set { this.mainGroup = value; OnPropertyChanged(nameof(this.MainGroup)); }
+    }
 
+    private uint middleGroup;
     /// <summary>
     /// Middle Group (Mittelgruppe)
     /// 0...7
     /// </summary>
-    public uint MiddleGroup { get; private set; }
+    public uint MiddleGroup
+    {
+      get { return this.middleGroup; }
+      set { this.middleGroup = value; OnPropertyChanged(nameof(this.MiddleGroup)); }
+    }
 
+    private uint subGroup;
     /// <summary>
     /// Sub Group (Untergruppe)
     /// 0...255
     /// </summary>
-    public uint SubGroup { get; private set; }
-
-    public GroupAddress(uint mainGroup, uint middleGroup, uint subGroup)
+    public uint SubGroup
     {
-      this.MainGroup = mainGroup;
-      this.MiddleGroup = middleGroup;
-      this.SubGroup = subGroup;
+      get { return this.subGroup; }
+      set { this.subGroup = value; OnPropertyChanged(nameof(this.SubGroup)); }
     }
 
     /// <summary>

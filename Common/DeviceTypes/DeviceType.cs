@@ -2,7 +2,7 @@
 
 namespace Common.DeviceTypes
 {
-  public enum DeviceTypes
+  public enum DeviceType
   {
     [Description("")]
     None, 

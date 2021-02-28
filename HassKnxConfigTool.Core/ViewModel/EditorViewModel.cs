@@ -50,13 +50,13 @@ namespace HassKnxConfigTool.Core.ViewModel
       IDevice newDevice;
       switch (this.SelectedDeviceType)
       {
-        case DeviceTypes.Light:
+        case DeviceType.Light:
           newDevice = new Light();
           break;
-        case DeviceTypes.Switch:  //TODO
-        case DeviceTypes.BinarySensor:
-        case DeviceTypes.Scene:
-        case DeviceTypes.None:
+        case DeviceType.Switch:  //TODO
+        case DeviceType.BinarySensor:
+        case DeviceType.Scene:
+        case DeviceType.None:
         default:
           throw new Exception($"Cannot add Device with type {this.SelectedDeviceType}.");
       }
@@ -205,7 +205,7 @@ namespace HassKnxConfigTool.Core.ViewModel
         }
         else
         {
-          this.SwitchDeviceView(DeviceTypes.None);
+          this.SwitchDeviceView(DeviceType.None);
         }
         OnPropertyChanged(nameof(CanAddLayer));
         OnPropertyChanged(nameof(CanAddSubLayer));
@@ -227,8 +227,8 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
     }
 
-    private IDeviceViewModel _deviceView;
-    public IDeviceViewModel DeviceView
+    private IDevice _deviceView;
+    public IDevice DeviceView
     {
       get { return _deviceView; }
       set { if (_deviceView != value) { _deviceView = value; OnPropertyChanged(nameof(DeviceView)); } }
@@ -269,8 +269,8 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
     }
 
-    private List<DeviceTypes> _deviceTypeValues;
-    public List<DeviceTypes> DeviceTypeValues
+    private List<DeviceType> _deviceTypeValues;
+    public List<DeviceType> DeviceTypeValues
     {
       get { return _deviceTypeValues; }
       set
@@ -280,8 +280,8 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
     }
 
-    private DeviceTypes _selectedDeviceType;
-    public DeviceTypes SelectedDeviceType
+    private DeviceType _selectedDeviceType;
+    public DeviceType SelectedDeviceType
     {
       get { return _selectedDeviceType; }
       set
@@ -297,12 +297,12 @@ namespace HassKnxConfigTool.Core.ViewModel
     #region Helpers
     private void InitEnumValues()
     {
-      this.DeviceTypeValues = new List<DeviceTypes>
+      this.DeviceTypeValues = new List<DeviceType>
             {
-                DeviceTypes.Light,
-                DeviceTypes.BinarySensor,
-                DeviceTypes.Switch,
-                DeviceTypes.Scene
+                DeviceType.Light,
+                DeviceType.BinarySensor,
+                DeviceType.Switch,
+                DeviceType.Scene
             };
 
       if (this.DeviceTypeValues.Any())
@@ -311,19 +311,26 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
     }
 
-    private void SwitchDeviceView(DeviceTypes selectedDeviceType)
+    private void SwitchDeviceView(DeviceType selectedDeviceType)
     {
+      // ignore layer changes
+      if (this.SelectedItemIsDevice == false)
+      {
+        return;
+      }
+
+      var device = ((DeviceModel)this.SelectedItem).Device;
       switch (selectedDeviceType)
       {
-        case DeviceTypes.Light:
-          this.DeviceView = new LightDeviceViewModel();
+        case DeviceType.Light:
+          this.DeviceView = (Light)device;
           break;
-        case DeviceTypes.None:
+        case DeviceType.None:
           this.DeviceView = null;
           break;
-        case DeviceTypes.Switch: /// TODO
-        case DeviceTypes.BinarySensor:
-        case DeviceTypes.Scene:
+        case DeviceType.Switch: /// TODO
+        case DeviceType.BinarySensor:
+        case DeviceType.Scene:
         default:
           throw new ArgumentOutOfRangeException("Newly selected device type has no view assigned.");
       }

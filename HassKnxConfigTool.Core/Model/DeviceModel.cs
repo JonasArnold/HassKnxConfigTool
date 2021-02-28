@@ -1,5 +1,7 @@
 ﻿using Common.DeviceTypes;
+using Newtonsoft.Json;
 using System;
+using System.ComponentModel;
 
 namespace HassKnxConfigTool.Core.Model
 {
@@ -12,6 +14,7 @@ namespace HassKnxConfigTool.Core.Model
 
     public string Name { get; set; }
 
+    [JsonConverter(typeof(DeviceConverter))] // using a specific converter to enable deserialization to instanciate correct implementation of interface
     public IDevice Device { get; set; }
 
     /// <summary>
