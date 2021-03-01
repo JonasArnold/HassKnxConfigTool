@@ -13,6 +13,7 @@ namespace HassKnxConfigTool.Core.ViewModel
     public string Header => "Editor";
     private readonly IUiService uiService;
     private readonly IProjectChangedNotifier projectChangedNotifier;
+    private ProjectModel currentlySelectedProject;
     private const int MaxLayerDepth = 3; // e.g. Main, Middle, Sub, Devices
 
     public EditorViewModel(IUiService uiService, IProjectChangedNotifier projectChangedNotifier)
@@ -28,6 +29,7 @@ namespace HassKnxConfigTool.Core.ViewModel
     {
       if (e != null)
       {
+        currentlySelectedProject = e;
         this.Layers = e.Layers;
       }
     }
@@ -44,14 +46,14 @@ namespace HassKnxConfigTool.Core.ViewModel
     }
 
     public RelayCommand AddDeviceCommand { get; private set; }
-    public bool CanAddDevice => SelectedItem != null && SelectedItem is LayerModel && string.IsNullOrEmpty(NewDeviceName) == false;
+    public bool CanAddDevice => SelectedItem != null && SelectedItem is LayerModel && string.IsNullOrEmpty(this.NewDeviceName) == false;
     public void AddDevice()
     {
       IDevice newDevice;
       switch (this.SelectedDeviceType)
       {
         case DeviceType.Light:
-          newDevice = new Light();
+          newDevice = new Light(this.NewDeviceName); // set default name
           break;
         case DeviceType.Switch:  //TODO
         case DeviceType.BinarySensor:
@@ -62,13 +64,15 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
       DeviceModel d = new DeviceModel
       {
-        Name = NewDeviceName,
+        Name = this.NewDeviceName,
         Device = newDevice
       };
-      NewDeviceName = "";  // remove current text
+      this.NewDeviceName = "";  // remove current text
 
       ((LayerModel)SelectedItem).Devices.Add(d);
-      OnPropertyChanged(nameof(NewDeviceName));
+      OnPropertyChanged(nameof(this.NewDeviceName));
+      OnPropertyChanged(nameof(this.Layers));
+      this.SetUnsavedChanges(true);
     }
 
     public RelayCommand RemoveDeviceCommand { get; private set; }
@@ -96,6 +100,8 @@ namespace HassKnxConfigTool.Core.ViewModel
           }
         }
       }
+
+      this.SetUnsavedChanges(true);
     }
 
     public RelayCommand AddLayerCommand { get; private set; }
@@ -110,6 +116,7 @@ namespace HassKnxConfigTool.Core.ViewModel
 
       Layers.Add(l);
       OnPropertyChanged(nameof(NewLayerName));
+      this.SetUnsavedChanges(true);
     }
 
     public RelayCommand AddSubLayerCommand { get; private set; }
@@ -126,6 +133,7 @@ namespace HassKnxConfigTool.Core.ViewModel
       OnPropertyChanged(nameof(NewSubLayerName));
       OnPropertyChanged(nameof(SelectedItem));
       OnPropertyChanged(nameof(Layers));
+      this.SetUnsavedChanges(true);
     }
 
     public RelayCommand RemoveLayerCommand { get; private set; }
@@ -161,6 +169,7 @@ namespace HassKnxConfigTool.Core.ViewModel
 
         OnPropertyChanged(nameof(SelectedItem));
         OnPropertyChanged(nameof(Layers));
+        this.SetUnsavedChanges(true);
       }
     }
 
@@ -199,14 +208,7 @@ namespace HassKnxConfigTool.Core.ViewModel
       set
       {
         _selectedItem = value;
-        if (this.SelectedItemIsDevice)
-        {
-          this.SwitchDeviceView(((DeviceModel)this.SelectedItem).Device.Type);
-        }
-        else
-        {
-          this.SwitchDeviceView(DeviceType.None);
-        }
+        this.SwitchPropertiesView(this.SelectedItem);
         OnPropertyChanged(nameof(CanAddLayer));
         OnPropertyChanged(nameof(CanAddSubLayer));
         OnPropertyChanged(nameof(CanAddDevice));
@@ -227,11 +229,11 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
     }
 
-    private IDevice _deviceView;
-    public IDevice DeviceView
+    private object _propertiesView;
+    public object PropertiesView
     {
-      get { return _deviceView; }
-      set { if (_deviceView != value) { _deviceView = value; OnPropertyChanged(nameof(DeviceView)); } }
+      get { return _propertiesView; }
+      set { if (_propertiesView != value) { _propertiesView = value; OnPropertyChanged(nameof(PropertiesView)); } }
     }
 
     private IDevice _newDeviceInstance;
@@ -288,13 +290,16 @@ namespace HassKnxConfigTool.Core.ViewModel
       {
         _selectedDeviceType = value;
         OnPropertyChanged(nameof(SelectedDeviceType));
-        this.SwitchDeviceView(_selectedDeviceType);
+        this.SwitchPropertiesView(_selectedDeviceType);
       }
     }
     #endregion
 
-
     #region Helpers
+    /// <summary>
+    /// Initializes the Enum <see cref="DeviceTypeValues"/>. 
+    /// Selects an item for <see cref="SelectedDeviceType"/>.
+    /// </summary>
     private void InitEnumValues()
     {
       this.DeviceTypeValues = new List<DeviceType>
@@ -311,28 +316,54 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
     }
 
-    private void SwitchDeviceView(DeviceType selectedDeviceType)
+    /// <summary>
+    /// Sets the flag for unsaved changes.
+    /// </summary>
+    /// <param name="hasUnsavedChanges">true if there are unsaved changes.</param>
+    private void SetUnsavedChanges(bool hasUnsavedChanges)
     {
-      // ignore layer changes
-      if (this.SelectedItemIsDevice == false)
+      if (this.currentlySelectedProject != null)
       {
-        return;
+        this.currentlySelectedProject.HasUnsavedChanges = hasUnsavedChanges;
+      }
+      this.uiService.UpdateUnsavedChangesDisplay(hasUnsavedChanges);  // property changed event
+    }
+
+    /// <summary>
+    /// Assigns the selected Item to the properties view.
+    /// </summary>
+    /// <param name="selectedItem">selected item to edit with properties view</param>
+    private void SwitchPropertiesView(object selectedItem)
+    {
+      if (selectedItem == null)
+      {
+        return; // ignore
       }
 
-      var device = ((DeviceModel)this.SelectedItem).Device;
-      switch (selectedDeviceType)
+      // switch to according device view
+      if (selectedItem is DeviceModel device)
       {
-        case DeviceType.Light:
-          this.DeviceView = (Light)device;
-          break;
-        case DeviceType.None:
-          this.DeviceView = null;
-          break;
-        case DeviceType.Switch: /// TODO
-        case DeviceType.BinarySensor:
-        case DeviceType.Scene:
-        default:
-          throw new ArgumentOutOfRangeException("Newly selected device type has no view assigned.");
+        switch (device.Device.Type)
+        {
+          case DeviceType.Light:
+            this.PropertiesView = (Light)device.Device;
+            break;
+          case DeviceType.Switch: // TODO
+          case DeviceType.BinarySensor:
+          case DeviceType.Scene:
+          case DeviceType.None:
+          default:
+            throw new ArgumentOutOfRangeException("Newly selected device type has no view assigned.");
+        }
+
+        // register for changes event
+        device.Device.AnyPropertyChanged += delegate { this.SetUnsavedChanges(true); }; 
+      }
+
+      // switch to according layer view
+      if (selectedItem is LayerModel layer)
+      {
+        this.PropertiesView = layer;
       }
     }
 

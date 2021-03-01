@@ -22,7 +22,7 @@ namespace HassKnxConfigTool.Core.Model
     /// </summary>
     public string Id { get; private set; }
 
-    #region IEquatable
+    #region IEquatable members
     public bool Equals(DeviceModel other)
     {
       return this.Id == other.Id;

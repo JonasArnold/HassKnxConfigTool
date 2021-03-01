@@ -14,6 +14,7 @@ namespace HassKnxConfigTool.Core.ViewModel
     {
       WireCommands();
       this.uiService = uiService;
+      this.SetUnsavedChanges(false);  //initialize
 
       // import saved Projects
       try
@@ -36,28 +37,28 @@ namespace HassKnxConfigTool.Core.ViewModel
     #region Commands
     private void WireCommands()
     {
-      AddProjectCommand = new RelayCommand(AddProject);
-      SaveProjectCommand = new RelayCommand(SaveProject);
+      this.AddProjectCommand = new RelayCommand(AddProject);
+      this.SaveProjectCommand = new RelayCommand(() => SaveProject(out bool _)); // ignore out parameter
     }
 
     public RelayCommand AddProjectCommand { get; private set; }
-    public bool CanAddProject => string.IsNullOrEmpty(NewProjectName) == false;
+    public bool CanAddProject => string.IsNullOrEmpty(this.NewProjectName) == false;
     public void AddProject()
     {
       ProjectModel p = new ProjectModel
       {
-        Name = NewProjectName
+        Name = this.NewProjectName
       };
 
-      NewProjectName = string.Empty;
+      this.NewProjectName = string.Empty;
 
-      Projects.Add(p);
+      this.Projects.Add(p);
     }
 
 
     public RelayCommand SaveProjectCommand { get; private set; }
-    public bool CanSaveProject => SelectedProject != null;
-    public void SaveProject()
+    public bool CanSaveProject => this.SelectedProject != null;
+    public void SaveProject(out bool success)
     {
       try
       {
@@ -70,10 +71,13 @@ namespace HassKnxConfigTool.Core.ViewModel
         this.ReloadProjects();  // update project save times
 
         this.uiService.DisplayBottomMessage(MessageSeverity.Success, $"Project {clone.Name} was saved successfully.");
+        this.SetUnsavedChanges(false);
+        success = true;
       }
       catch (Exception ex)
       {
         this.uiService.DisplayBottomMessage(MessageSeverity.Error, $"Project {SelectedProject?.Name} could not be stored: {ex}");
+        success = false;
       }
     }
     #endregion
@@ -112,14 +116,27 @@ namespace HassKnxConfigTool.Core.ViewModel
       get { return _selectedProject; }
       set
       {
-        if(_selectedProject != null && _selectedProject.HasUnsavedChanges) // ignore if null, check for unsaved changes
+        bool allowNewSelectedProject = true;
+
+        // if null: allow switch selected project
+        if(_selectedProject != null)
         {
-          this.SaveProject(); // first save
+          if(_selectedProject.HasUnsavedChanges)
+          {
+            this.SaveProject(out bool savingSuccess); // first save
+            allowNewSelectedProject = !savingSuccess; // only allow switch if saving was successful
+          }
         }
-        _selectedProject = value;  // set new value
-        if (_selectedProject != null)
+
+        // perform switch to new selected project
+        if(allowNewSelectedProject)
         {
-          SelectedProjectChanged?.Invoke(this, _selectedProject); // inform Editor View Model
+          _selectedProject = value;  // set new value
+          this.SetUnsavedChanges(false);
+          if (_selectedProject != null)
+          {
+            SelectedProjectChanged?.Invoke(this, _selectedProject); // inform Editor View Model
+          }
         }
         OnPropertyChanged(nameof(SelectedProject));
         OnPropertyChanged(nameof(CanSaveProject));
@@ -134,6 +151,19 @@ namespace HassKnxConfigTool.Core.ViewModel
       var projects = Projects;
       Projects = null;
       Projects = projects;
+    }
+
+    /// <summary>
+    /// Sets the flag for unsaved changes.
+    /// </summary>
+    /// <param name="hasUnsavedChanges">true if there are unsaved changes.</param>
+    private void SetUnsavedChanges(bool hasUnsavedChanges)
+    {
+      if (this.SelectedProject != null)
+      {
+        this.SelectedProject.HasUnsavedChanges = hasUnsavedChanges;
+      }
+      this.uiService.UpdateUnsavedChangesDisplay(hasUnsavedChanges);  // property changed event
     }
     #endregion
   }

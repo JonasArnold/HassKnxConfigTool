@@ -1,5 +1,4 @@
 ﻿using Common.Mvvm;
-using System.ComponentModel;
 
 namespace Common.Knx
 {

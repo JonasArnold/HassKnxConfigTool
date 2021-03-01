@@ -9,13 +9,18 @@
         mc:Ignorable="d" 
         FontSize="15" Icon="/Assets/compare.ico"
         Title="HomeAssistant KNX Configuration Tool" 
-        Height="700" Width="1200" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" >
+        Height="700" Width="1200" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" 
+        Closing="Window_Closing" >
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        
+
+        <TextBlock Grid.Row="0" Panel.ZIndex="1" Margin="10 4"
+                   HorizontalAlignment="Right" VerticalAlignment="Top" 
+                   Text="Unsaved Changes" Foreground="Red" FontWeight="DemiBold"
+                   Name="tbUnsavedChanges"/>
         <TabControl Grid.Row="0" x:Name="tabControlMain">
             <TabControl.ItemContainerStyle>
                 <Style TargetType="{x:Type TabItem}">

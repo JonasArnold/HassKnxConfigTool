@@ -9,6 +9,8 @@ namespace HassKnxConfigTool.Core
   public interface IUiService
   {
     void DisplayBottomMessage(MessageSeverity severity, string message);
+
+    void UpdateUnsavedChangesDisplay(bool hasUnsavedChanges);
   }
   public enum MessageSeverity
   {

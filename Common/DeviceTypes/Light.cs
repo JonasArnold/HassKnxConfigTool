@@ -1,5 +1,6 @@
 ﻿using Common.Attributes;
 using Common.Knx;
+using Newtonsoft.Json;
 
 namespace Common.DeviceTypes
 {
@@ -12,19 +13,32 @@ namespace Common.DeviceTypes
   /// </summary>
   public class Light : BaseDevice
   {
+    /// <summary>
+    /// Creates an instance and initializes the name of the device.
+    /// </summary>
+    /// <param name="name">new name of the device.</param>
+    public Light(string name)
+     :this()
+    {
+      this.Name = name;
+    }
+
+    /// <summary>
+    /// Creates an instance without initializing a name.
+    /// </summary>
     public Light()
       :base(DeviceType.Light)
     {
       this.Address = new GroupAddress();
+      this.Address.PropertyChanged += delegate { base.OnAnyPropertyChanged(); };
       this.StateAddress = new GroupAddress();
-      this.BrightnessAddress = new GroupAddress();
-      this.BrightnessStateAddress = new GroupAddress();
+      this.StateAddress.PropertyChanged += delegate { base.OnAnyPropertyChanged(); };
     }
 
     private string name;
     /// <summary>
     /// A name for this device used within Home Assistant.
-    /// /// </summary>
+    /// </summary>
     [PropertyName("name")]
     public override string Name
     {
@@ -44,26 +58,66 @@ namespace Common.DeviceTypes
       set { this.address = value; OnPropertyChanged(nameof(this.Address)); }
     }
 
+    private GroupAddress stateAddress;
     /// <summary>
     /// KNX group address for retrieving the switch state of the light. 
     /// DPT 1.001
     /// </summary>
     [PropertyName("state_address")]
-    public GroupAddress StateAddress { get; set; }
+    public GroupAddress StateAddress
+    {
+      get { return this.stateAddress; }
+      set { this.stateAddress = value; OnPropertyChanged(nameof(this.StateAddress)); }
+    }
 
+    /// <summary>
+    /// Displays if the Brightness is enabled.
+    /// If set the isntances are created or deleted.
+    /// </summary>
+    [JsonIgnore]
+    public bool BrightnessEnabled { 
+      get => this.BrightnessAddress != null;
+      set
+      {
+        if(value)
+        {
+          this.BrightnessAddress = new GroupAddress();
+          this.BrightnessAddress.PropertyChanged += delegate { base.OnAnyPropertyChanged(); };
+          this.BrightnessStateAddress = new GroupAddress();
+          this.BrightnessStateAddress.PropertyChanged += delegate { base.OnAnyPropertyChanged(); };
+        }
+        else
+        {
+          this.BrightnessAddress = null;
+          this.BrightnessStateAddress = null;
+        }
+        OnPropertyChanged(nameof(this.BrightnessEnabled));
+      }
+    }
+
+    private GroupAddress brightnessAddress;
     /// <summary>
     /// KNX group address for setting the brightness of the light in percent (absolute dimming). 
     /// DPT 5.001
     /// </summary>
     [PropertyName("brightness_address")]
-    public GroupAddress BrightnessAddress { get; set; }
+    public GroupAddress BrightnessAddress
+    {
+      get { return this.brightnessAddress; }
+      set { this.brightnessAddress = value; OnPropertyChanged(nameof(this.BrightnessAddress)); }
+    }
 
+    private GroupAddress brightnessStateAddress;
     /// <summary>
     /// KNX group address for retrieving the brightness of the light in percent. 
     /// DPT 5.001
     /// </summary>
     [PropertyName("brightness_state_address")]
-    public GroupAddress BrightnessStateAddress { get; set; }
+    public GroupAddress BrightnessStateAddress
+    {
+      get { return this.brightnessStateAddress; }
+      set { this.brightnessStateAddress = value; OnPropertyChanged(nameof(this.BrightnessStateAddress)); }
+    }
 
     // TODO Add Color RGBW, Color Temperature
   }
