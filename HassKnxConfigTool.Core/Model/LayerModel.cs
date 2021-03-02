@@ -1,26 +1,21 @@
-﻿using Common.Mvvm;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
 
 namespace HassKnxConfigTool.Core.Model
 {
-  public class LayerModel : ObservableObject, IEquatable<LayerModel>, IEquatable<string>
+  [Serializable]
+#pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
+  public class LayerModel : BaseLayer, IEquatable<LayerModel>, IEquatable<string>
+#pragma warning restore CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
   {
-    public LayerModel()
+    public LayerModel(ILayer parentLayer)
+      :base(parentLayer)
     {
       SubLayers = new ObservableCollection<LayerModel>();
       Devices = new ObservableCollection<DeviceModel>();
       this.SubLayers.CollectionChanged += AnyCollectionChanged;
       this.Devices.CollectionChanged += AnyCollectionChanged;
-      Id = Guid.NewGuid().ToString();  // generate unique id
-    }
-
-    private string name;
-    public string Name
-    {
-      get { return this.name; }
-      set { this.name = value; OnPropertyChanged(nameof(this.Name)); }
     }
 
     private ObservableCollection<LayerModel> subLayers;
@@ -43,16 +38,6 @@ namespace HassKnxConfigTool.Core.Model
       set { this.devices = value; OnPropertyChanged(nameof(this.Devices)); }
     }
 
-    /// <summary>
-    /// Shows the depth of layers.
-    /// </summary>
-    public int Depth { get; private set; }
-
-    /// <summary>
-    /// Unique Identifier for this layer
-    /// </summary>
-    public string Id { get; private set; }
-
     private int subItemsCount;
     /// <summary>
     /// Displays the number of items available below this layer.
@@ -74,7 +59,6 @@ namespace HassKnxConfigTool.Core.Model
       if (this.Devices != null) sum += this.Devices.Count;
       this.SubItemsCount = sum;
     }
-
 
     #region IEquatable members
     public bool Equals(LayerModel other)

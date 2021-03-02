@@ -10,22 +10,23 @@ namespace HassKnxConfigTool.Core
     public static void StoreProject(ProjectModel project)
     {
       // Create serializer
-      JsonSerializer serializer = new JsonSerializer();
-      serializer.NullValueHandling = NullValueHandling.Ignore;
+      JsonSerializer serializer = new JsonSerializer()
+      {
+        NullValueHandling = NullValueHandling.Ignore,
+        Formatting = Formatting.Indented
+      };
 
       // create file path if it does not exist yet
-      if(Directory.Exists(Constants.ProjectFilesLocation) == false)
+      if (Directory.Exists(Constants.ProjectFilesLocation) == false)
       {
         Directory.CreateDirectory(Constants.ProjectFilesLocation);
       }
 
       // TODO Normalize string project.Name to make sure it is compatible with Windows file path
       // open stream writer at file path and store the file, streawriter will overwrite existing file or create new
-      using (StreamWriter sw = new StreamWriter($"{Constants.ProjectFilesLocation}{project.Name}{Constants.ProjectFilesExtension}", false))
-      using (JsonWriter writer = new JsonTextWriter(sw))
-      {
-        serializer.Serialize(writer, project);
-      }
+      using StreamWriter sw = new StreamWriter($"{Constants.ProjectFilesLocation}{project.Name}{Constants.ProjectFilesExtension}", false);
+      using JsonWriter writer = new JsonTextWriter(sw);
+      serializer.Serialize(writer, project);
     }
 
     public static IList<ProjectModel> LoadProjects()

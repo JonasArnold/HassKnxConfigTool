@@ -7,7 +7,10 @@ namespace HassKnxConfigTool.Core.ViewModel
 {
   public class ProjectsViewModel : ViewModelBase, IProjectChangedNotifier
   {
-    public string Header => "Projects";
+    #region ViewModelBase members
+    public override string Header => "Projects";
+    #endregion
+
     private readonly IUiService uiService;
 
     public ProjectsViewModel(IUiService uiService)

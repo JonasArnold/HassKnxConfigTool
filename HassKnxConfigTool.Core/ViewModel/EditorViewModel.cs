@@ -10,7 +10,10 @@ namespace HassKnxConfigTool.Core.ViewModel
 {
   public class EditorViewModel : ViewModelBase
   {
-    public string Header => "Editor";
+    #region ViewModelBase members
+    public override string Header => "Editor";
+    #endregion
+
     private readonly IUiService uiService;
     private readonly IProjectChangedNotifier projectChangedNotifier;
     private ProjectModel currentlySelectedProject;
@@ -46,30 +49,27 @@ namespace HassKnxConfigTool.Core.ViewModel
     }
 
     public RelayCommand AddDeviceCommand { get; private set; }
-    public bool CanAddDevice => SelectedItem != null && SelectedItem is LayerModel && string.IsNullOrEmpty(this.NewDeviceName) == false;
+    public bool CanAddDevice => this.SelectedItemIsLayerAndBelowMaxDepth && string.IsNullOrEmpty(this.NewDeviceName) == false;
     public void AddDevice()
     {
-      IDevice newDevice;
-      switch (this.SelectedDeviceType)
+      IDevice newDevice = this.SelectedDeviceType switch
       {
-        case DeviceType.Light:
-          newDevice = new Light(this.NewDeviceName); // set default name
-          break;
-        case DeviceType.Switch:  //TODO
-        case DeviceType.BinarySensor:
-        case DeviceType.Scene:
-        case DeviceType.None:
-        default:
-          throw new Exception($"Cannot add Device with type {this.SelectedDeviceType}.");
-      }
-      DeviceModel d = new DeviceModel
+        DeviceType.Light => new Light(this.NewDeviceName),// set default name
+                                                          //TODO
+        _ => throw new Exception($"Cannot add Device with type {this.SelectedDeviceType}."),
+      };
+
+      // create new device model
+      var currentLayer = SelectedItem as LayerModel;
+      DeviceModel d = new DeviceModel(currentLayer)
       {
         Name = this.NewDeviceName,
         Device = newDevice
       };
       this.NewDeviceName = "";  // remove current text
 
-      ((LayerModel)SelectedItem).Devices.Add(d);
+      // add newly created device to layer
+      currentLayer.Devices.Add(d);
       OnPropertyChanged(nameof(this.NewDeviceName));
       OnPropertyChanged(nameof(this.Layers));
       this.SetUnsavedChanges(true);
@@ -108,28 +108,33 @@ namespace HassKnxConfigTool.Core.ViewModel
     public bool CanAddLayer => string.IsNullOrEmpty(NewLayerName) == false;
     public void AddLayer()
     {
-      LayerModel l = new LayerModel
+      // create new primary layer (null => primary layer)
+      LayerModel l = new LayerModel(null) 
       {
         Name = NewLayerName
       };
       NewLayerName = "";  // remove current text
 
+      // add primary layer
       Layers.Add(l);
       OnPropertyChanged(nameof(NewLayerName));
       this.SetUnsavedChanges(true);
     }
 
     public RelayCommand AddSubLayerCommand { get; private set; }
-    public bool CanAddSubLayer => SelectedItem != null && SelectedItem is LayerModel && string.IsNullOrEmpty(NewSubLayerName) == false;
+    public bool CanAddSubLayer => this.SelectedItemIsLayerAndBelowMaxDepth && string.IsNullOrEmpty(NewSubLayerName) == false;
     public void AddSubLayer()
     {
-      LayerModel sl = new LayerModel
+      // create new sub layer
+      var currentLayer = this.SelectedItem as LayerModel;
+      LayerModel sl = new LayerModel(currentLayer)
       {
         Name = NewSubLayerName
       };
       NewSubLayerName = "";  // remove current text
 
-      ((LayerModel)SelectedItem).SubLayers.Add(sl);
+      // add newly created sub layer to sublayers
+      currentLayer.SubLayers.Add(sl);
       OnPropertyChanged(nameof(NewSubLayerName));
       OnPropertyChanged(nameof(SelectedItem));
       OnPropertyChanged(nameof(Layers));
@@ -137,7 +142,7 @@ namespace HassKnxConfigTool.Core.ViewModel
     }
 
     public RelayCommand RemoveLayerCommand { get; private set; }
-    public bool CanRemoveLayer => SelectedItem != null && SelectedItem is LayerModel;
+    public bool CanRemoveLayer => this.SelectedItemIsLayer;
     public void RemoveLayer()
     {
       // remove device for max. depth of 3
@@ -173,17 +178,12 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
     }
 
-
     public RelayCommand<object> SelectedItemChangedCommand { get; private set; }
     private void SelectedItemChanged(object arg)
     {
-      if (arg is LayerModel layer)
+      if (arg is LayerModel or DeviceModel)
       {
-        SelectedItem = layer;
-      }
-      if (arg is DeviceModel device)
-      {
-        SelectedItem = device;
+        this.SelectedItem = arg;
       }
     }
 
@@ -343,18 +343,12 @@ namespace HassKnxConfigTool.Core.ViewModel
       // switch to according device view
       if (selectedItem is DeviceModel device)
       {
-        switch (device.Device.Type)
+        this.PropertiesView = device.Device.Type switch
         {
-          case DeviceType.Light:
-            this.PropertiesView = (Light)device.Device;
-            break;
-          case DeviceType.Switch: // TODO
-          case DeviceType.BinarySensor:
-          case DeviceType.Scene:
-          case DeviceType.None:
-          default:
-            throw new ArgumentOutOfRangeException("Newly selected device type has no view assigned.");
-        }
+          DeviceType.Light => (Light)device.Device,
+          // TODO
+          _ => throw new ImplementationException("Newly selected device type has no view assigned."),
+        };
 
         // register for changes event
         device.Device.AnyPropertyChanged += delegate { this.SetUnsavedChanges(true); }; 
@@ -365,11 +359,23 @@ namespace HassKnxConfigTool.Core.ViewModel
       {
         this.PropertiesView = layer;
       }
+
+      OnPropertyChanged(nameof(this.PropertiesView));  // notify about change
     }
 
     private bool SelectedItemIsDevice
     {
-      get { return SelectedItem != null && SelectedItem is DeviceModel; }
+      get { return this.SelectedItem != null && this.SelectedItem is DeviceModel; }
+    }
+
+    private bool SelectedItemIsLayer
+    {
+      get { return this.SelectedItem != null && this.SelectedItem is LayerModel; }
+    }
+
+    private bool SelectedItemIsLayerAndBelowMaxDepth
+    {
+      get { return this.SelectedItemIsLayer && (this.SelectedItem as LayerModel).Depth < MaxLayerDepth; }
     }
 
     #endregion

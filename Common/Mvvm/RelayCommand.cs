@@ -32,10 +32,7 @@ namespace Common.Mvvm
     /// <param name="canExecute">The execution status logic.</param>
     public RelayCommand(Action execute, Predicate<bool> canExecute)
     {
-      if (execute == null)
-        throw new ArgumentNullException("handler");
-
-      _execute = execute;
+      _execute = execute ?? throw new ArgumentNullException(nameof(execute));
       _canExecute = canExecute;
     }
 
@@ -100,10 +97,7 @@ namespace Common.Mvvm
     /// <param name="canExecute">The execution status logic.</param>
     public RelayCommand(Action<T> execute, Predicate<T> canExecute)
     {
-      if (execute == null)
-        throw new ArgumentNullException("execute");
-
-      _execute = execute;
+      _execute = execute ?? throw new ArgumentNullException(nameof(execute));
       _canExecute = canExecute;
     }
 

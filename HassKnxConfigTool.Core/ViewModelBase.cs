@@ -2,21 +2,22 @@
 
 namespace HassKnxConfigTool.Core
 {
+  /// <summary>
+  /// Base class for View Models.
+  /// Note: Observable object does not work here.
+  /// </summary>
   public abstract class ViewModelBase : INotifyPropertyChanged
   {
     /// <summary>
     /// Header of the view Model.
     /// </summary>
-    string Header { get; }
+    public abstract string Header { get; }
 
     public event PropertyChangedEventHandler PropertyChanged;
 
     protected virtual void OnPropertyChanged(string propName)
     {
-      if (PropertyChanged != null)
-      {
-        PropertyChanged(this, new PropertyChangedEventArgs(propName));
-      }
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
     }
   }
 }

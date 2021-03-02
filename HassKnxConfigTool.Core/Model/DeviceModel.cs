@@ -1,26 +1,22 @@
 ﻿using Common.DeviceTypes;
 using Newtonsoft.Json;
 using System;
-using System.ComponentModel;
 
 namespace HassKnxConfigTool.Core.Model
 {
-  public class DeviceModel : IEquatable<DeviceModel>, IEquatable<string>
+  [Serializable]
+#pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
+  public class DeviceModel : BaseLayer, IEquatable<DeviceModel>, IEquatable<string>
+#pragma warning restore CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
   {
-    public DeviceModel()
+    public DeviceModel(ILayer parentLayer)
+      :base(parentLayer)
     {
-      Id = Guid.NewGuid().ToString();  // generate unique id
     }
-
-    public string Name { get; set; }
 
     [JsonConverter(typeof(DeviceConverter))] // using a specific converter to enable deserialization to instanciate correct implementation of interface
     public IDevice Device { get; set; }
 
-    /// <summary>
-    /// Unique Identifier for this device
-    /// </summary>
-    public string Id { get; private set; }
 
     #region IEquatable members
     public bool Equals(DeviceModel other)
