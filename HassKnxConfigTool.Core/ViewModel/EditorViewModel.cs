@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using Common.DeviceTypes;
 using Common.Mvvm;
@@ -17,7 +18,6 @@ namespace HassKnxConfigTool.Core.ViewModel
     private readonly IUiService uiService;
     private readonly IProjectChangedNotifier projectChangedNotifier;
     private ProjectModel currentlySelectedProject;
-    private const int MaxLayerDepth = 3; // e.g. Main, Middle, Sub, Devices
 
     public EditorViewModel(IUiService uiService, IProjectChangedNotifier projectChangedNotifier)
     {
@@ -81,25 +81,10 @@ namespace HassKnxConfigTool.Core.ViewModel
     {
       // remove device for max. depth of 3
       string idToRemove = ((DeviceModel)SelectedItem).Id;
-      bool removed = false;
-      foreach (var subItem in Layers)
-      {
-        if (removed == false)
-        {
-          removed &= subItem.Devices.Remove(subItem.Devices.FirstOrDefault(d => d.Id == idToRemove));
-          foreach (var subSubItem in subItem.SubLayers)
-          {
-            if (removed == false)
-            {
-              removed &= subSubItem.Devices.Remove(subSubItem.Devices.FirstOrDefault(d => d.Id == idToRemove));
-              foreach (var subSubSubItem in subSubItem.SubLayers)
-              {
-                removed &= subSubSubItem.Devices.Remove(subSubSubItem.Devices.FirstOrDefault(d => d.Id == idToRemove));
-              }
-            }
-          }
-        }
-      }
+
+      // use recursive helper method to remove layer
+      var successfullyRemoved = LayerHelpers.FindAndRemoveDevice(idToRemove, this.Layers);
+      Debug.WriteLine($"FindAndRemoveDevice Success={successfullyRemoved}");
 
       this.SetUnsavedChanges(true);
     }
@@ -109,7 +94,7 @@ namespace HassKnxConfigTool.Core.ViewModel
     public void AddLayer()
     {
       // create new primary layer (null => primary layer)
-      LayerModel l = new LayerModel(null) 
+      LayerModel l = new LayerModel(null)
       {
         Name = NewLayerName
       };
@@ -147,35 +132,14 @@ namespace HassKnxConfigTool.Core.ViewModel
     {
       // remove device for max. depth of 3
       string idToRemove = ((LayerModel)SelectedItem).Id;
-      bool removed = false;
 
-      removed &= Layers.Remove(Layers.FirstOrDefault(d => d.Id == idToRemove));
-      if (removed == false)
-      {
-        foreach (var layer in Layers)
-        {
-          removed &= Layers.Remove(layer.SubLayers.FirstOrDefault(d => d.Id == idToRemove));
-          if (removed == false)
-          {
-            removed &= layer.SubLayers.Remove(layer.SubLayers.FirstOrDefault(d => d.Id == idToRemove));
-            foreach (var subLayer in layer.SubLayers)
-            {
-              if (removed == false)
-              {
-                removed &= subLayer.SubLayers.Remove(subLayer.SubLayers.FirstOrDefault(d => d.Id == idToRemove));
-                foreach (var subSubLayer in subLayer.SubLayers)
-                {
-                  removed &= subSubLayer.SubLayers.Remove(subSubLayer.SubLayers.FirstOrDefault(d => d.Id == idToRemove));
-                }
-              }
-            }
-          }
-        }
+      // use recursive helper method to remove layer
+      var successfullyRemoved = LayerHelpers.FindAndRemoveLayer(idToRemove, this.Layers);
+      Debug.WriteLine($"FindAndRemoveLayer Success={successfullyRemoved}");
 
-        OnPropertyChanged(nameof(SelectedItem));
-        OnPropertyChanged(nameof(Layers));
-        this.SetUnsavedChanges(true);
-      }
+      OnPropertyChanged(nameof(SelectedItem));
+      OnPropertyChanged(nameof(Layers));
+      this.SetUnsavedChanges(true);
     }
 
     public RelayCommand<object> SelectedItemChangedCommand { get; private set; }
@@ -351,7 +315,7 @@ namespace HassKnxConfigTool.Core.ViewModel
         };
 
         // register for changes event
-        device.Device.AnyPropertyChanged += delegate { this.SetUnsavedChanges(true); }; 
+        device.Device.AnyPropertyChanged += delegate { this.SetUnsavedChanges(true); };
       }
 
       // switch to according layer view
@@ -375,7 +339,7 @@ namespace HassKnxConfigTool.Core.ViewModel
 
     private bool SelectedItemIsLayerAndBelowMaxDepth
     {
-      get { return this.SelectedItemIsLayer && (this.SelectedItem as LayerModel).Depth < MaxLayerDepth; }
+      get { return this.SelectedItemIsLayer && (this.SelectedItem as LayerModel).Depth < Constants.MaxLayerDepth; }
     }
 
     #endregion
