@@ -46,8 +46,10 @@ namespace HassKnxConfigTool.Core
         var fileInfo = new FileInfo(file);
         // ignore files that do not have the correct extension
         if (fileInfo.Extension != Constants.ProjectFilesExtension) continue;
-        // deserialize project
+
+        // deserialize project 
         importedProjects.Add(JsonConvert.DeserializeObject<ProjectModel>(File.ReadAllText(file)));
+        // TODO fix one project cannot be imported => none is returned
       }
 
       return importedProjects;

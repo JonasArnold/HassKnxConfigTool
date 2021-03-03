@@ -5,15 +5,34 @@ using System.Collections.ObjectModel;
 
 namespace HassKnxConfigTool.Core.Model
 {
+  [Serializable]
+  [JsonConverter(typeof(ProjectConverter))] // using a specific converter to check for data version
   public class ProjectModel : ObservableObject, ICloneable
   {
+    /// <summary>
+    /// Project name.
+    /// </summary>
     public string Name { get; set; }
 
+    /// <summary>
+    /// Indicates the version of data structure.
+    /// </summary>
+    public int DataVersion { get; set; }
+
+    /// <summary>
+    /// Layers stored in this Project.
+    /// </summary>
     public ObservableCollection<LayerModel> Layers { get; set; }
 
+    /// <summary>
+    /// When the project was saved latest.
+    /// </summary>
     public DateTime LastSaved { get; set; }
 
     private bool hasUnsavedChanges;
+    /// <summary>
+    /// Indicates if the project has any unsaved changes.
+    /// </summary>
     [JsonIgnore]
     public bool HasUnsavedChanges
     {
@@ -23,11 +42,16 @@ namespace HassKnxConfigTool.Core.Model
 
     public ProjectModel()
     {
-      LastSaved = DateTime.Now;
-      Layers = new ObservableCollection<LayerModel>();
+      this.LastSaved = DateTime.Now;
+      this.Layers = new ObservableCollection<LayerModel>();
       this.HasUnsavedChanges = false;
+      this.DataVersion = Constants.DataVersion;
     }
 
+    /// <summary>
+    /// Creates a memberwise clone of this instance of a project.
+    /// </summary>
+    /// <returns>clone</returns>
     public object Clone()
     {
       return this.MemberwiseClone();
