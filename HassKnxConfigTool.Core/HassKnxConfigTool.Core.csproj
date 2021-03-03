@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\HassKnxConfigFileGenerator\HassKnxConfigFileGenerator.csproj" />
   </ItemGroup>
 
 </Project>

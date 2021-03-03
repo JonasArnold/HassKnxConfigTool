@@ -42,6 +42,7 @@ namespace HassKnxConfigTool.Core.ViewModel
     {
       this.AddProjectCommand = new RelayCommand(AddProject);
       this.SaveProjectCommand = new RelayCommand(() => SaveProject(out bool _)); // ignore out parameter
+      this.GenerateProjectConfigurationCommand = new RelayCommand(GenerateProjectConfiguration);
     }
 
     public RelayCommand AddProjectCommand { get; private set; }
@@ -83,6 +84,36 @@ namespace HassKnxConfigTool.Core.ViewModel
         success = false;
       }
     }
+
+    public RelayCommand GenerateProjectConfigurationCommand { get; private set; }
+    public bool CanGenerateProjectConfiguration => this.SelectedProject != null;
+    public void GenerateProjectConfiguration()
+    {
+      if(this.SelectedProjectHasUnsavedChanges)
+      {
+        // first save project if there are unsaved changes
+        this.SaveProject(out bool successfullySaved);
+
+        // break if the project could not be saved => do not generate config
+        if(successfullySaved == false)
+        {
+          return;
+        }
+      }
+
+      // create copy of selected project and start generation of configs
+      var copyOfSelectedProject = (ProjectModel)SelectedProject.Clone();
+      try
+      {
+        ConfigurationGenerator.GenerateAllConfigs(copyOfSelectedProject.Layers, copyOfSelectedProject.Name.ToLowerInvariant());
+        this.uiService.DisplayBottomMessage(MessageSeverity.Success, $"All Configs were generated successfully.");
+      }
+      catch (Exception ex)
+      {
+        this.uiService.DisplayBottomMessage(MessageSeverity.Error, $"Configs could not be generated: {ex}");
+      }
+    }
+
     #endregion
 
     #region Properties
@@ -143,6 +174,7 @@ namespace HassKnxConfigTool.Core.ViewModel
         }
         OnPropertyChanged(nameof(SelectedProject));
         OnPropertyChanged(nameof(CanSaveProject));
+        OnPropertyChanged(nameof(CanGenerateProjectConfiguration));
       }
     }
 
@@ -167,6 +199,14 @@ namespace HassKnxConfigTool.Core.ViewModel
         this.SelectedProject.HasUnsavedChanges = hasUnsavedChanges;
       }
       this.uiService.UpdateUnsavedChangesDisplay(hasUnsavedChanges);  // property changed event
+    }
+
+    /// <summary>
+    /// Reads out if the selected project has unsaved changes.
+    /// </summary>
+    private bool SelectedProjectHasUnsavedChanges
+    {
+      get { return this.SelectedProject != null && this.SelectedProject.HasUnsavedChanges; }
     }
     #endregion
   }

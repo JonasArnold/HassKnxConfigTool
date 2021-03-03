@@ -1,5 +1,6 @@
 ﻿using Common.Attributes;
 using System;
+using System.Diagnostics;
 
 namespace HassKnxConfigFileGenerator
 {
@@ -24,10 +25,20 @@ namespace HassKnxConfigFileGenerator
       string instanceString = "- ";
       Type itemType = instance.GetType();
 
-      Console.WriteLine($"Properties of type: {itemType.Name}");
+      Debug.WriteLine($"Properties of type: {itemType.Name}");
       foreach (var property in itemType.GetProperties())
       {
+        // extract haName attribute
         string haName = AttributeHelper.GetPropertyInfoAttributeValue<T, string, PropertyNameAttribute, string>(property, attr => attr.Value);
+
+        // if the HA name is not defined or it is not relevant for HA
+        if(String.IsNullOrEmpty(haName))
+        {
+          // ignore this property
+          continue;
+        }
+
+        // extract value of property
         var value = instance.GetType().GetProperty(property.Name).GetValue(instance, null);
         if(string.IsNullOrEmpty(value?.ToString()) == false)  // if value is not empty
         {
@@ -42,7 +53,7 @@ namespace HassKnxConfigFileGenerator
             instanceString += $"  {haName}: '{value}'\n";  // two spaces in front
           }
         }
-        Console.WriteLine($"PropertyName: {property.Name},\t HA Name: {haName},\t Value: {value}");
+        Debug.WriteLine($"PropertyName: {property.Name},\t HA Name: {haName},\t Value: {value}");
       }
       return instanceString;
     }

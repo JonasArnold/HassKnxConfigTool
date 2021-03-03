@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Common.Exceptions;
 using Common.FileHelpers;
 
 namespace HassKnxConfigFileGenerator
@@ -15,7 +16,7 @@ namespace HassKnxConfigFileGenerator
     /// <param name="filePath">path where the file should be stored (e.g. @"c:\temp\lights.yaml")</param>
     public static void GenerateConfigFile<T>(List<T> instances, string filePath)
     {
-      Console.WriteLine($"Starting Generation of config....");
+      Debug.WriteLine($"Starting Generation of config....");
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -25,17 +26,16 @@ namespace HassKnxConfigFileGenerator
       // check if the given list is really a generic list   //TEST
       if (!typeList.IsGenericType || typeList.GetGenericTypeDefinition() != typeof(List<>))
       {
-        throw new ArgumentException("Argument 'instances' is not a generic type.");
+        throw new ImplementationException("Argument 'instances' is not a generic type.");
       }
       typeItem = typeList.GetGenericArguments()[0];
 
-      // check if the item type exists in the DeviceTypeDefinitions namespace   //TEST
-      string @namespace = "HassKnxConfigFileGenerator.DeviceTypeDefinitions";
-      var myClassType = Type.GetType(String.Format("{0}.{1}", @namespace, typeItem.Name));
+      // check if the item type exists in the DeviceTypes namespace (including assembly)  //TEST
+      var myClassType = Type.GetType($"{Constants.DeviceTypeDefinitionNamespace}.{typeItem.Name}, {typeItem.Assembly.FullName}");
       object instance = myClassType == null ? null : Activator.CreateInstance(myClassType); //Check if exists, instantiate if so.
       if(instance == null)
       {
-        throw new ArgumentException($"Type of instance does not exist in {@namespace}.");
+        throw new ImplementationException($"Type of instance does not exist in {Constants.DeviceTypeDefinitionNamespace}.");
       }
 
       // create content
@@ -46,9 +46,9 @@ namespace HassKnxConfigFileGenerator
       }
       sw.Stop();
 
-      Console.WriteLine($"Done. Milliseconds to generate: {sw.Elapsed.TotalMilliseconds}");
-      Console.WriteLine("Finished content: \n\n");
-      Console.WriteLine(content);
+      Debug.WriteLine($"Done. Milliseconds to generate: {sw.Elapsed.TotalMilliseconds}");
+      Debug.WriteLine("Finished content: \n\n");
+      Debug.WriteLine(content);
 
       // store file
       FileGenerator.CreateFile(filePath, content);

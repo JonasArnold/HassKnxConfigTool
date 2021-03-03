@@ -1,4 +1,6 @@
-﻿using HassKnxConfigTool.Core.Model;
+﻿using Common.DeviceTypes;
+using HassKnxConfigTool.Core.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,7 +15,7 @@ namespace HassKnxConfigTool.Core
     /// <param name="id">Identification of the layer to remove</param>
     /// <param name="layers">Layer collection to search</param>
     /// <returns>true = removed successfully</returns>
-    public static bool FindAndRemoveLayer(string id, ICollection<LayerModel> layers)
+    internal static bool FindAndRemoveLayer(string id, ICollection<LayerModel> layers)
     {
       bool removed = false;
 
@@ -51,7 +53,7 @@ namespace HassKnxConfigTool.Core
     /// <param name="id">Identification of the device to remove</param>
     /// <param name="layers">Layer collection to search</param>
     /// <returns>true = removed successfully</returns>
-    public static bool FindAndRemoveDevice(string id, ICollection<LayerModel> layers)
+    internal static bool FindAndRemoveDevice(string id, ICollection<LayerModel> layers)
     {
       bool removed = false;
 
@@ -74,5 +76,40 @@ namespace HassKnxConfigTool.Core
       return removed;
     }
 
+    /// <summary>
+    /// Seraches all layers and sublayers and creates a list with all devices found of type T.
+    /// </summary>
+    /// <typeparam name="T">type of devices to find</typeparam>
+    /// <param name="layers">layers to serach</param>
+    /// <returns>list with all found devices of type T</returns>
+    internal static List<T> FindAllDevicesOfType<T>(ICollection<LayerModel> layers) where T : IDevice
+    {
+      var foundDevices = new List<T>();
+      var type = typeof(T);
+
+      // serach this level of layer
+      foreach (var layer in layers)
+      {
+        // serach every device in this layer
+        foreach (var device in layer.Devices)
+        {
+          // check if the device has the searched type
+          if(type.IsAssignableFrom(device.Device.GetType()))
+          {
+            // add to list
+            foundDevices.Add((T)device.Device);
+          }
+        }
+
+        // check if the maximum serach depth is not yet reached (if not checked creates endless recursive loop)
+        if ((layer.Depth + 1) <= Constants.MaxLayerDepth)
+        {
+          // recursively serach sublayer for devices
+          foundDevices.AddRange(FindAllDevicesOfType<T>(layer.SubLayers));
+        }
+      }
+
+      return foundDevices;
+    }
   }
 }

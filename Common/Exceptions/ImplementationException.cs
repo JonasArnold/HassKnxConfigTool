@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Common.Exceptions
 {
   [Serializable]
-  internal class ImplementationException : Exception
+  public class ImplementationException : Exception
   {
     public ImplementationException()
     {
