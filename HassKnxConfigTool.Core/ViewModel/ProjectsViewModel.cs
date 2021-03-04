@@ -2,6 +2,7 @@
 using HassKnxConfigTool.Core.Model;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace HassKnxConfigTool.Core.ViewModel
 {
@@ -72,7 +73,7 @@ namespace HassKnxConfigTool.Core.ViewModel
         ProjectManager.StoreProject(clone);
         // if successful:
         SelectedProject.LastSaved = saveTime;
-        this.ReloadProjects();  // update project save times
+        this.ReloadProjects();  // update project view
 
         this.uiService.DisplayBottomMessage(MessageSeverity.Success, $"Project {clone.Name} was saved successfully.");
         this.SetUnsavedChanges(false);
@@ -89,13 +90,13 @@ namespace HassKnxConfigTool.Core.ViewModel
     public bool CanGenerateProjectConfiguration => this.SelectedProject != null;
     public void GenerateProjectConfiguration()
     {
-      if(this.SelectedProjectHasUnsavedChanges)
+      if (this.SelectedProjectHasUnsavedChanges)
       {
         // first save project if there are unsaved changes
         this.SaveProject(out bool successfullySaved);
 
         // break if the project could not be saved => do not generate config
-        if(successfullySaved == false)
+        if (successfullySaved == false)
         {
           return;
         }
@@ -121,8 +122,8 @@ namespace HassKnxConfigTool.Core.ViewModel
     public ObservableCollection<ProjectModel> Projects
     {
       get { return _projects; }
-      set 
-      { 
+      set
+      {
         _projects = value;
         OnPropertyChanged(nameof(Projects));
       }
@@ -153,9 +154,9 @@ namespace HassKnxConfigTool.Core.ViewModel
         bool allowNewSelectedProject = true;
 
         // if null: allow switch selected project
-        if(_selectedProject != null)
+        if (_selectedProject != null)
         {
-          if(_selectedProject.HasUnsavedChanges)
+          if (_selectedProject.HasUnsavedChanges)
           {
             this.SaveProject(out bool savingSuccess); // first save
             allowNewSelectedProject = !savingSuccess; // only allow switch if saving was successful
@@ -163,7 +164,7 @@ namespace HassKnxConfigTool.Core.ViewModel
         }
 
         // perform switch to new selected project
-        if(allowNewSelectedProject)
+        if (allowNewSelectedProject)
         {
           _selectedProject = value;  // set new value
           this.SetUnsavedChanges(false);
@@ -181,11 +182,21 @@ namespace HassKnxConfigTool.Core.ViewModel
     #endregion
 
     #region Helpers
+    /// <summary>
+    /// Reloads the list of Projects in the UI.
+    /// Ensures that the selected Project will be the same after reloading.
+    /// </summary>
     private void ReloadProjects()
     {
-      var projects = Projects;
-      Projects = null;
-      Projects = projects;
+      // store currently selected project's id
+      var previouslySelectedProjectId = this.SelectedProject.Id;
+
+      var projects = Projects; // read out project list
+      Projects = null;  // reset list
+      Projects = projects; // set list to saved 
+
+      // set selected project to the project that was selected before the save (may throw exception)
+      this.SelectedProject = Projects.FirstOrDefault(p => p.Id == previouslySelectedProjectId);
     }
 
     /// <summary>

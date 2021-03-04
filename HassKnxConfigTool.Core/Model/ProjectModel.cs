@@ -10,6 +10,11 @@ namespace HassKnxConfigTool.Core.Model
   public class ProjectModel : ObservableObject, ICloneable
   {
     /// <summary>
+    /// Identification of this project.
+    /// </summary>
+    public string Id { get; }
+
+    /// <summary>
     /// Project name.
     /// </summary>
     public string Name { get; set; }
@@ -46,6 +51,7 @@ namespace HassKnxConfigTool.Core.Model
       this.Layers = new ObservableCollection<LayerModel>();
       this.HasUnsavedChanges = false;
       this.DataVersion = Constants.DataVersion;
+      this.Id = Guid.NewGuid().ToString();  // generate unique id
     }
 
     /// <summary>
