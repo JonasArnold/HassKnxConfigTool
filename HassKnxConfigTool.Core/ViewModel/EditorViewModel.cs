@@ -172,7 +172,7 @@ namespace HassKnxConfigTool.Core.ViewModel
       set
       {
         _selectedItem = value;
-        this.SwitchPropertiesView(this.SelectedItem);
+        this.SwitchPropertiesViews(this.SelectedItem);
         OnPropertyChanged(nameof(CanAddLayer));
         OnPropertyChanged(nameof(CanAddSubLayer));
         OnPropertyChanged(nameof(CanAddDevice));
@@ -193,11 +193,18 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
     }
 
-    private object _propertiesView;
-    public object PropertiesView
+    private object _devicePropertiesView;
+    public object DevicePropertiesView
     {
-      get { return _propertiesView; }
-      set { if (_propertiesView != value) { _propertiesView = value; OnPropertyChanged(nameof(PropertiesView)); } }
+      get { return _devicePropertiesView; }
+      set { if (_devicePropertiesView != value) { _devicePropertiesView = value; OnPropertyChanged(nameof(DevicePropertiesView)); } }
+    }
+
+    private ILayer _layerPropertiesView;
+    public ILayer LayerPropertiesView
+    {
+      get { return _layerPropertiesView; }
+      set { if (_layerPropertiesView != value) { _layerPropertiesView = value; OnPropertyChanged(nameof(LayerPropertiesView)); } }
     }
 
     private IDevice _newDeviceInstance;
@@ -254,7 +261,7 @@ namespace HassKnxConfigTool.Core.ViewModel
       {
         _selectedDeviceType = value;
         OnPropertyChanged(nameof(SelectedDeviceType));
-        this.SwitchPropertiesView(_selectedDeviceType);
+        this.SwitchPropertiesViews(_selectedDeviceType);
       }
     }
     #endregion
@@ -297,17 +304,25 @@ namespace HassKnxConfigTool.Core.ViewModel
     /// Assigns the selected Item to the properties view.
     /// </summary>
     /// <param name="selectedItem">selected item to edit with properties view</param>
-    private void SwitchPropertiesView(object selectedItem)
+    private void SwitchPropertiesViews(object selectedItem)
     {
       if (selectedItem == null)
       {
         return; // ignore
       }
 
-      // switch to according device view
-      if (selectedItem is DeviceModel device)
+      // switch to according layer view
+      if (selectedItem is LayerModel layer)
       {
-        this.PropertiesView = device.Device.Type switch
+        this.LayerPropertiesView = layer;
+        this.DevicePropertiesView = new EmptyViewModel();
+      }
+
+      // switch to according device view
+      else if (selectedItem is DeviceModel device)
+      {
+        this.LayerPropertiesView = device;
+        this.DevicePropertiesView = device.Device.Type switch
         {
           DeviceType.Light => (Light)device.Device,
           // TODO
@@ -318,13 +333,8 @@ namespace HassKnxConfigTool.Core.ViewModel
         device.Device.AnyPropertyChanged += delegate { this.SetUnsavedChanges(true); };
       }
 
-      // switch to according layer view
-      if (selectedItem is LayerModel layer)
-      {
-        this.PropertiesView = layer;
-      }
-
-      OnPropertyChanged(nameof(this.PropertiesView));  // notify about change
+      OnPropertyChanged(nameof(this.LayerPropertiesView));  // notify about change
+      OnPropertyChanged(nameof(this.DevicePropertiesView));
     }
 
     private bool SelectedItemIsDevice
