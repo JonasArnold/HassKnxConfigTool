@@ -1,5 +1,6 @@
 ﻿using Common.Attributes;
 using Common.Knx;
+using Common.Mvvm;
 using Newtonsoft.Json;
 
 namespace Common.DeviceTypes
@@ -29,12 +30,14 @@ namespace Common.DeviceTypes
     public Light()
       :base(DeviceType.Light)
     {
+      this.WireCommands();
       this.Address = new GroupAddress();
       this.Address.PropertyChanged += delegate { base.OnAnyPropertyChanged(); };
       this.StateAddress = new GroupAddress();
       this.StateAddress.PropertyChanged += delegate { base.OnAnyPropertyChanged(); };
     }
 
+    #region Properties
     private string name;
     /// <summary>
     /// A name for this device used within Home Assistant.
@@ -104,7 +107,7 @@ namespace Common.DeviceTypes
     public GroupAddress BrightnessAddress
     {
       get { return this.brightnessAddress; }
-      set { this.brightnessAddress = value; OnPropertyChanged(nameof(this.BrightnessAddress)); }
+      set { this.brightnessAddress = value; OnPropertyChanged(nameof(this.BrightnessAddress)); OnPropertyChanged(nameof(this.BrightnessEnabled)); }
     }
 
     private GroupAddress brightnessStateAddress;
@@ -116,9 +119,33 @@ namespace Common.DeviceTypes
     public GroupAddress BrightnessStateAddress
     {
       get { return this.brightnessStateAddress; }
-      set { this.brightnessStateAddress = value; OnPropertyChanged(nameof(this.BrightnessStateAddress)); }
+      set { this.brightnessStateAddress = value; OnPropertyChanged(nameof(this.BrightnessStateAddress)); OnPropertyChanged(nameof(this.BrightnessEnabled)); }
     }
 
     // TODO Add Color RGBW, Color Temperature
+    #endregion
+
+    #region Commands
+    private void WireCommands()
+    {
+      PopulateByPatternCommand = new RelayCommand(PopulatePropertiesByPattern);
+    }
+
+    [JsonIgnore]
+    public RelayCommand PopulateByPatternCommand { get; private set; }
+    [JsonIgnore]
+    public bool CanPopulateByPattern => this.StateAddress != null;
+    private void PopulatePropertiesByPattern()
+    {
+      uint main = this.Address.MainGroup;
+      uint middle = this.Address.MiddleGroup;
+      uint sub = this.Address.SubGroup;
+
+      this.StateAddress = new GroupAddress() { MainGroup = main, MiddleGroup = middle, SubGroup = sub + 2 };
+      this.BrightnessAddress = new GroupAddress() { MainGroup = main, MiddleGroup = middle, SubGroup = sub + 3 };
+      this.BrightnessStateAddress = new GroupAddress() { MainGroup = main, MiddleGroup = middle, SubGroup = sub + 4 };
+    }
+
+    #endregion
   }
 }

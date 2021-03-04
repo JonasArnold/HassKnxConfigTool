@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:HassKnxConfigTool.Wpf.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="240" d:DesignWidth="800">
+             d:DesignHeight="240" d:DesignWidth="1400">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
@@ -33,7 +33,14 @@
             <TextBox Width="30" Text="{Binding Address.MiddleGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <TextBlock> /</TextBlock>
             <TextBox Width="30" Text="{Binding Address.SubGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <!-- Button to populate by pattern -->
+            <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Name="btnPopulateByPattern" 
+                Command="{Binding PopulateByPatternCommand}" IsEnabled="{Binding CanPopulateByPattern}" 
+                Height="25" Width="100" VerticalAlignment="Center" Margin="10 0">
+                <TextBlock Text="Use Pattern"/>
+            </Button>
         </StackPanel>
+        
 
         <!-- State Address -->
         <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">State Address:</TextBlock>
@@ -44,6 +51,8 @@
             <TextBlock> /</TextBlock>
             <TextBox Width="30" Text="{Binding StateAddress.SubGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
+
+
 
         <!-- Brightness enabled -->
         <TextBlock Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Margin="10 0 0 0">Brightness:</TextBlock>

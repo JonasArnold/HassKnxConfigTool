@@ -9,7 +9,7 @@
         mc:Ignorable="d" 
         FontSize="15" Icon="/Assets/compare.ico"
         Title="HomeAssistant KNX Configuration Tool" 
-        Height="700" Width="1200" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" 
+        Height="900" Width="1500" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" 
         Closing="Window_Closing" >
     <Grid>
         <Grid.RowDefinitions>
