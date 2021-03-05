@@ -1,4 +1,5 @@
 ﻿using Common.Attributes;
+using HassKnxConfigFileGenerator.ValueParsing;
 using System;
 using System.Diagnostics;
 
@@ -40,20 +41,24 @@ namespace HassKnxConfigFileGenerator
 
         // extract value of property
         var value = instance.GetType().GetProperty(property.Name).GetValue(instance, null);
-        if(string.IsNullOrEmpty(value?.ToString()) == false)  // if value is not empty
+
+        // parse to string
+        string parsedValue = HassValueParser.ParseObject(value);
+
+        if(string.IsNullOrEmpty(parsedValue) == false)  // if value is not empty
         {
           // add line to config
           if (firstLine)
           {
-            instanceString += $"{haName}: '{value}'\n";  // TEST value.ToString defined?
+            instanceString += $"{haName}: '{parsedValue}'\n";  // TEST value.ToString defined?
             firstLine = false;
           }
           else
           {
-            instanceString += $"  {haName}: '{value}'\n";  // two spaces in front
+            instanceString += $"  {haName}: '{parsedValue}'\n";  // two spaces in front
           }
         }
-        Debug.WriteLine($"PropertyName: {property.Name},\t HA Name: {haName},\t Value: {value}");
+        Debug.WriteLine($"PropertyName: {property.Name},\t HA Name: {haName},\t Value: {parsedValue}");
       }
       return instanceString;
     }

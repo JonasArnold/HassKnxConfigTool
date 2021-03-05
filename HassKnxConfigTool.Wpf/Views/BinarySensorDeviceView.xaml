@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="HassKnxConfigTool.Wpf.Views.BinarySensorDeviceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:converters="clr-namespace:HassKnxConfigTool.Wpf.Converters"
+             xmlns:helpers="clr-namespace:HassKnxConfigTool.Wpf.Helpers"
+             xmlns:local="clr-namespace:HassKnxConfigTool.Wpf.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="240" d:DesignWidth="1400">
+    <UserControl.Resources>
+        <converters:DisplayNameAttributeConverter x:Key="displayNameConverter"/>
+        <converters:DescriptionAttributeConverter x:Key="descConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="1.6*" />
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+
+        <!-- Name -->
+        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Name in HA:</TextBlock>
+        <TextBox Grid.Row="0" Grid.Column="1" Height="25" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <!-- State Address -->
+        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">State Address:</TextBlock>
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Height="25">
+            <TextBox Width="30" Text="{Binding StateAddress.MainGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding StateAddress.MiddleGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding StateAddress.SubGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <!-- Sensor type -->
+        <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Sensor Type:</TextBlock>
+        <ComboBox  Grid.Row="2" Grid.Column="1" Height="25" ItemsSource="{Binding BinarySensorTypeValues}" SelectedItem="{Binding SelectedBinarySensorType}">
+            <ComboBox.ItemTemplateSelector>
+                <helpers:ComboBoxItemTemplateSelector>
+                    <helpers:ComboBoxItemTemplateSelector.SelectedItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Converter={StaticResource displayNameConverter}}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </helpers:ComboBoxItemTemplateSelector.SelectedItemTemplate>
+                    <helpers:ComboBoxItemTemplateSelector.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontWeight="Bold" Text="{Binding Converter={StaticResource displayNameConverter}}"/>
+                                <TextBlock Text=" { "/>
+                                <TextBlock Text="{Binding Converter={StaticResource descConverter}}"/>
+                                <TextBlock Text=" }"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </helpers:ComboBoxItemTemplateSelector.ItemTemplate>
+                </helpers:ComboBoxItemTemplateSelector>
+                
+            </ComboBox.ItemTemplateSelector>
+        </ComboBox>
+
+        <!-- Inverted -->
+        <TextBlock Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Margin="10 0 0 0">Inverted:</TextBlock>
+        <CheckBox Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" Margin="10 0 0 0" IsChecked="{Binding Inverted, Mode=TwoWay}">Enabled</CheckBox>
+
+    </Grid>
+</UserControl>

@@ -72,11 +72,11 @@ namespace HassKnxConfigTool.Core.ViewModel
         clone.LastSaved = saveTime;
         ProjectManager.StoreProject(clone);
         // if successful:
+        this.SetUnsavedChanges(false);  // must set unsaved changes before reload projects! (otherwise stack overflow, always tries to re-save)
         SelectedProject.LastSaved = saveTime;
         this.ReloadProjects();  // update project view
 
         this.uiService.DisplayBottomMessage(MessageSeverity.Success, $"Project {clone.Name} was saved successfully.");
-        this.SetUnsavedChanges(false);
         success = true;
       }
       catch (Exception ex)

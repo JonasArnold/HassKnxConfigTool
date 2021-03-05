@@ -1,14 +1,15 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Data;
+using Common.Attributes;
 
 namespace HassKnxConfigTool.Wpf.Converters
 {
-  public class EnumDescriptionConverter : IValueConverter
+  public class DisplayNameAttributeConverter : IValueConverter
   {
-    private string GetEnumDescription(Enum enumObj)
+    private static string GetEnumDescription(Enum enumObj)
     {
       if (enumObj == null)
       {
@@ -24,12 +25,12 @@ namespace HassKnxConfigTool.Wpf.Converters
       }
       else
       {
-        DescriptionAttribute attrib = attribArray[0] as DescriptionAttribute;
-        return attrib.Description;
+        var descAttribute = attribArray.FirstOrDefault(a => a.GetType() == typeof(DisplayNameAttribute)) as DisplayNameAttribute;
+        return descAttribute.DisplayName;
       }
     }
 
-    object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
       if(value == null || (value is string stringVal && string.IsNullOrEmpty(stringVal))) // prevent exception for empty string
       {
@@ -48,7 +49,7 @@ namespace HassKnxConfigTool.Wpf.Converters
       return myEnum.ToString();
     }
 
-    object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
       return string.Empty;
     }

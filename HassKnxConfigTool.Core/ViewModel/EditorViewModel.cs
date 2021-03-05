@@ -52,10 +52,12 @@ namespace HassKnxConfigTool.Core.ViewModel
     public bool CanAddDevice => this.SelectedItemIsLayerAndBelowMaxDepth && string.IsNullOrEmpty(this.NewDeviceName) == false;
     public void AddDevice()
     {
-      IDevice newDevice = this.SelectedDeviceType switch
+      IDevice newDevice = this.SelectedDeviceType switch  // EXTEND_DEVICETYPES
       {
-        DeviceType.Light => new Light(this.NewDeviceName),// set default name
-                                                          //TODO
+        // instantiate new device, always set default name
+        DeviceType.Light => new Light(this.NewDeviceName),
+        DeviceType.Switch => new Common.DeviceTypes.Switch(this.NewDeviceName),
+        DeviceType.BinarySensor => new BinarySensor(this.NewDeviceName),
         _ => throw new Exception($"Cannot add Device with type {this.SelectedDeviceType}."),
       };
 
@@ -273,14 +275,13 @@ namespace HassKnxConfigTool.Core.ViewModel
     /// </summary>
     private void InitEnumValues()
     {
-      this.DeviceTypeValues = new List<DeviceType>
-            {
-                DeviceType.Light,
-                DeviceType.BinarySensor,
-                DeviceType.Switch,
-                DeviceType.Scene
-            };
+      // parse enum
+      this.DeviceTypeValues = Enum.GetValues(typeof(DeviceType)).Cast<DeviceType>().ToList();
 
+      // remove none field, since the user shall not be able to select this
+      this.DeviceTypeValues.Remove(DeviceType.None);
+
+      // select first device type
       if (this.DeviceTypeValues.Any())
       {
         this.SelectedDeviceType = this.DeviceTypeValues.First();
@@ -322,10 +323,12 @@ namespace HassKnxConfigTool.Core.ViewModel
       else if (selectedItem is DeviceModel device)
       {
         this.LayerPropertiesView = device;
-        this.DevicePropertiesView = device.Device.Type switch
+        this.DevicePropertiesView = device.Device.Type switch  // EXTEND_DEVICETYPES
         {
+          // instantiate view
           DeviceType.Light => (Light)device.Device,
-          // TODO
+          DeviceType.Switch => (Common.DeviceTypes.Switch)device.Device,
+          DeviceType.BinarySensor => (BinarySensor)device.Device,
           _ => throw new ImplementationException("Newly selected device type has no view assigned."),
         };
 

@@ -8,7 +8,7 @@ namespace Common.Attributes
   /// <summary>
   /// Helps with reading out specific attributes assigned to properties.
   /// </summary>
-  public class AttributeHelper
+  public static class AttributeHelper
   {
     /// <summary>
     /// Reads out the attribute's value of a property. 
@@ -36,6 +36,21 @@ namespace Common.Attributes
     where TAttribute : Attribute
     {
       return propertyInfo.GetCustomAttributes(typeof(TAttribute), true).FirstOrDefault() is TAttribute attr ? valueSelector(attr) : default;
+    }
+
+    /// <summary>
+    /// Gets an attribute on an enum field value
+    /// </summary>
+    /// <typeparam name="T">The type of the attribute you want to retrieve</typeparam>
+    /// <param name="enumVal">The enum value</param>
+    /// <returns>The attribute of type T that exists on the enum value</returns>
+    /// <example><![CDATA[string desc = myEnumVariable.GetAttributeOfType<DescriptionAttribute>().Description;]]></example>
+    public static T GetAttributeOfType<T>(this Enum enumVal) where T : Attribute
+    {
+      var type = enumVal.GetType();
+      var memInfo = type.GetMember(enumVal.ToString());
+      var attributes = memInfo[0].GetCustomAttributes(typeof(T), false);
+      return (attributes.Length > 0) ? (T)attributes[0] : null;
     }
   }
 }

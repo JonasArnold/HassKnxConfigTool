@@ -15,7 +15,8 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <converters:LayerDeviceConverter x:Key="ldConverter"/>
-        <converters:EnumDescriptionConverter x:Key="descConverter"/>
+        <converters:DisplayNameAttributeConverter x:Key="displayNameConverter"/>
+        <converters:DeviceImageConverter x:Key="deviceImgConverter"/>
         <!-- Views for Layer properties -->
         <DataTemplate DataType="{x:Type models:LayerModel}">
             <local:LayerView />
@@ -24,11 +25,18 @@
             <local:LayerView />
         </DataTemplate>
         <!-- Views for Device properties -->
+        <!-- EXTEND_DEVICETYPES -->
         <DataTemplate DataType="{x:Type vm:EmptyViewModel}">
             <local:EmptyView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type devicetypes:Light}"> <!-- EXTEND_DEVICETYPES -->
+        <DataTemplate DataType="{x:Type devicetypes:Light}">
             <local:LightDeviceView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type devicetypes:Switch}">
+            <local:SwitchDeviceView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type devicetypes:BinarySensor}">
+            <local:BinarySensorDeviceView />
         </DataTemplate>
     </UserControl.Resources>
     <Grid>
@@ -75,7 +83,11 @@
                 </HierarchicalDataTemplate>
                 <DataTemplate DataType="{x:Type models:DeviceModel}">
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="/HassKnxConfigTool.Wpf;component/Assets/device_hub.png" Height="20" Stretch="Uniform" Margin="0,0,5,0" />
+                        <Image Height="20" Stretch="Uniform" Margin="0,0,5,0">
+                            <Image.Source>
+                                <Binding Converter="{StaticResource deviceImgConverter}" Path="Device.Type" />
+                            </Image.Source>
+                        </Image>
                         <TextBlock Text="{Binding Name}" />
                     </StackPanel>
                 </DataTemplate>
@@ -124,7 +136,7 @@
             <ComboBox Margin="5 0" ItemsSource="{Binding DeviceTypeValues}" SelectedItem="{Binding SelectedDeviceType}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Converter={StaticResource descConverter}}"/>
+                        <TextBlock Text="{Binding Converter={StaticResource displayNameConverter}}"/>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>

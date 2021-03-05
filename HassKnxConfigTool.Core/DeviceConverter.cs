@@ -31,7 +31,7 @@ namespace HassKnxConfigTool.Core
           break;
 
         case (int)DeviceType.BinarySensor:
-          // TODO
+          device = new BinarySensor();
           break;
 
         case (int)DeviceType.Scene:
@@ -39,7 +39,7 @@ namespace HassKnxConfigTool.Core
           break;
 
         case (int)DeviceType.Switch:
-          // TODO
+          device = new Switch();
           break;
 
         default:

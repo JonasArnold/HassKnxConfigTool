@@ -24,8 +24,10 @@ namespace HassKnxConfigTool.Core
         Directory.CreateDirectory(outputFolder);
       }
 
-      // Generate config of every single device types
-      ExtractDevicesAndGenerateConfigOfType<Light>(layers, $"{outputFolder}lights{Constants.ExportFilesExtension}");  // TODO extend types
+      // Generate config of every single device types (EXTEND_DEVICETYPES)
+      ExtractDevicesAndGenerateConfigOfType<Light>(layers, $"{outputFolder}lights{Constants.ExportFilesExtension}");
+      ExtractDevicesAndGenerateConfigOfType<Switch>(layers, $"{outputFolder}switch{Constants.ExportFilesExtension}");
+      ExtractDevicesAndGenerateConfigOfType<BinarySensor>(layers, $"{outputFolder}binary_sensor{Constants.ExportFilesExtension}");
     }
 
     /// <summary>

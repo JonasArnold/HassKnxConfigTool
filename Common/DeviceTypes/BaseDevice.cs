@@ -5,6 +5,7 @@ namespace Common.DeviceTypes
 {
   /// <summary>
   /// Base type for devices.
+  /// EXTEND_DEVICETYPES (inherit this class)
   /// </summary>
   public abstract class BaseDevice : ObservableObject, IDevice
   {
@@ -19,7 +20,6 @@ namespace Common.DeviceTypes
       this.Type = type;
       base.PropertyChanged += BaseDevice_PropertyChanged;
     }
-
 
     /// <summary>
     /// Is called whenever a property of the device is updated via <see cref="ObservableObject"/>.
@@ -36,6 +36,5 @@ namespace Common.DeviceTypes
     {
       this.AnyPropertyChanged?.Invoke(this, null);
     }
-
   }
 }

@@ -1,22 +1,22 @@
-﻿using System.ComponentModel;
+﻿using Common.Attributes;
 
 namespace Common.DeviceTypes
 {
   public enum DeviceType
   {
-    [Description("")]
+    [DisplayName(" ")]
     None, 
 
-    [Description("Light")]
+    [DisplayName("Light")]
     Light,
 
-    [Description("Switch")]
+    [DisplayName("Switch")]
     Switch,
 
-    [Description("Binary Sensor")]
+    [DisplayName("Binary Sensor")]
     BinarySensor,
 
-    [Description("Scene")]
+    [DisplayName("Scene")]
     Scene
   }
 }
