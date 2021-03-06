@@ -14,7 +14,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Panel.ZIndex="1" Margin="10 4"
@@ -36,9 +36,13 @@
                 </DataTemplate>
             </TabControl.Resources>
         </TabControl>
+        
+        <Line/>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <TextBlock x:Name="tbBottomMessage" FontSize="15" Margin="10 5"/>
-        </StackPanel>
+        <DockPanel Grid.Row="1" Margin="5">
+            <TextBlock x:Name="tbBottomMessage" FontSize="15" Width="1350" TextWrapping="Wrap" />
+            <Label x:Name="tbSoftwareVersion" FontSize="12" Width="100" Panel.ZIndex="5" Foreground="DimGray" Background="White"
+                   HorizontalAlignment="Right" VerticalAlignment="Bottom" HorizontalContentAlignment="Right" />
+        </DockPanel>
     </Grid>
 </Window>

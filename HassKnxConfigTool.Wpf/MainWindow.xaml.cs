@@ -20,36 +20,25 @@ namespace HassKnxConfigTool.Wpf
     public MainWindow()
     {
       InitializeComponent();
+      tbSoftwareVersion.Content = $"Version {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}";
+
+      // create view models
       this.ProjectsVM = new ProjectsViewModel(this);
       this.EditorVM = new EditorViewModel(this, this.ProjectsVM);
-
       this.TabList = new ObservableCollection<ViewModelBase> { this.ProjectsVM, this.EditorVM };
       this.tabControlMain.ItemsSource = this.TabList;
     }
 
     public void DisplayBottomMessage(MessageSeverity severity, string message)
     {
-      Brush col;
-      switch (severity)
+      Brush col = severity switch
       {
-        case MessageSeverity.Success:
-          col = Brushes.Green;
-          break;
-        case MessageSeverity.Warning:
-          col = Brushes.Orange;
-          break;
-        case MessageSeverity.Error:
-          col = Brushes.Red;
-          break;
-        case MessageSeverity.Information:
-          col = Brushes.Blue;
-          break;
-        case MessageSeverity.Unknown:
-        default:
-          col = Brushes.DarkGray;
-          break;
-      }
-
+        MessageSeverity.Success => Brushes.Green,
+        MessageSeverity.Warning => Brushes.Orange,
+        MessageSeverity.Error => Brushes.Red,
+        MessageSeverity.Information => Brushes.Blue,
+        _ => Brushes.DarkGray,
+      };
       tbBottomMessage.Foreground = col;
       tbBottomMessage.Text = message;
     }

@@ -20,7 +20,7 @@ namespace HassKnxConfigTool.Core.Model
     /// Constructor to initialize from deserialization.
     /// </summary>
     public DeviceModel(ILayer parentLayer, int depth, string myId)
-  : base(parentLayer, depth, myId)
+      : base(parentLayer, depth, myId)
     {
     }
 

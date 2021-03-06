@@ -86,7 +86,7 @@ namespace HassKnxConfigTool.Core.ViewModel
 
       // create new device model
       var currentLayer = BaseLayer.SelectedItem as LayerModel;
-      DeviceModel d = new DeviceModel(currentLayer)
+      var d = new DeviceModel(currentLayer)
       {
         Name = this.NewDeviceName,
         Device = newDevice,
@@ -122,7 +122,7 @@ namespace HassKnxConfigTool.Core.ViewModel
     public void AddLayer()
     {
       // create new primary layer (null => primary layer)
-      LayerModel l = new LayerModel(null)
+      var l = new LayerModel(null)
       {
         Name = NewLayerName,
         IsExpanded = true, // auto expand newly added layer
@@ -142,7 +142,7 @@ namespace HassKnxConfigTool.Core.ViewModel
     {
       // create new sub layer
       var currentLayer = BaseLayer.SelectedItem as LayerModel;
-      LayerModel sl = new LayerModel(currentLayer)
+      var sl = new LayerModel(currentLayer)
       {
         Name = NewSubLayerName,
         IsExpanded = true, // auto expand newly added layer
@@ -207,7 +207,7 @@ namespace HassKnxConfigTool.Core.ViewModel
     #endregion
 
     #region Properties
-    private ObservableCollection<LayerModel> _layers = new ObservableCollection<LayerModel>();
+    private ObservableCollection<LayerModel> _layers = new();
     public ObservableCollection<LayerModel> Layers
     {
       get { return _layers; }
