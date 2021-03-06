@@ -28,7 +28,7 @@ namespace HassKnxConfigTool.Core.Model
     public IDevice Device { get; set; }
 
     #region Base class members
-    public override bool IsExpanded { get => false; set => throw new NotSupportedException("IsExpanded is not applicable for DeviceModel"); }
+    public override bool IsExpanded { get => false; set { } }
     #endregion
 
     #region IEquatable members
