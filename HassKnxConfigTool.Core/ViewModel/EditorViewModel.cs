@@ -37,6 +37,7 @@ namespace HassKnxConfigTool.Core.ViewModel
       {
         currentlySelectedProject = e;
         this.Layers = e.Layers;
+        BaseLayer.ResetSelectedItem();
       }
     }
 
@@ -343,7 +344,9 @@ namespace HassKnxConfigTool.Core.ViewModel
     {
       if (selectedItem == null)
       {
-        return; // ignore
+        this.LayerPropertiesView = null;
+        this.DevicePropertiesView = new EmptyViewModel();
+        return; // ignore rest
       }
 
       // switch to according layer view

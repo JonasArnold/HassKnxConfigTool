@@ -75,15 +75,15 @@ namespace HassKnxConfigTool.Core.Model
       this.SubItemsCount = sum;
     }
 
-    #region TreeView Properties
+    #region Base class members
     private bool isExpanded;
     [JsonIgnore]
-    public bool IsExpanded
+    public override bool IsExpanded
     {
       get { return this.isExpanded; }
-      set 
-      { 
-        this.isExpanded = value; 
+      set
+      {
+        this.isExpanded = value;
         OnPropertyChanged(nameof(this.IsExpanded));
 
         // expand up to the root

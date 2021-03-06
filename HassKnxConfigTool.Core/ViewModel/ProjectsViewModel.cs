@@ -42,7 +42,7 @@ namespace HassKnxConfigTool.Core.ViewModel
     private void WireCommands()
     {
       this.AddProjectCommand = new RelayCommand(AddProject);
-      this.SaveProjectCommand = new RelayCommand(() => SaveProject(out bool _)); // ignore out parameter
+      this.SaveProjectCommand = new RelayCommand(() => SaveProject(out bool _, true)); // ignore out parameter
       this.GenerateProjectConfigurationCommand = new RelayCommand(GenerateProjectConfiguration);
     }
 
@@ -72,18 +72,21 @@ namespace HassKnxConfigTool.Core.ViewModel
 
     public RelayCommand SaveProjectCommand { get; private set; }
     public bool CanSaveProject => this.SelectedProject != null;
-    public void SaveProject(out bool success)
+    public void SaveProject(out bool success, bool reloadProjectsActivated)
     {
       try
       {
-        var clone = (ProjectModel)SelectedProject.Clone();  // clone instance
+        var clone = (ProjectModel)SelectedProject.Clone(); // clone instance
         var saveTime = DateTime.Now;
         clone.LastSaved = saveTime;
         ProjectManager.StoreProject(clone);
         // if successful:
         this.SetUnsavedChanges(false);  // must set unsaved changes before reload projects! (otherwise stack overflow, always tries to re-save)
         SelectedProject.LastSaved = saveTime;
-        this.ReloadProjects();  // update project view
+        if (reloadProjectsActivated)
+        {
+          this.ReloadProjects();  // update project view
+        }
 
         this.uiService.DisplayBottomMessage(MessageSeverity.Success, $"Project {clone.Name} was saved successfully.");
         success = true;
@@ -102,7 +105,7 @@ namespace HassKnxConfigTool.Core.ViewModel
       if (this.SelectedProjectHasUnsavedChanges)
       {
         // first save project if there are unsaved changes
-        this.SaveProject(out bool successfullySaved);
+        this.SaveProject(out bool successfullySaved, true);
 
         // break if the project could not be saved => do not generate config
         if (successfullySaved == false)
@@ -167,8 +170,8 @@ namespace HassKnxConfigTool.Core.ViewModel
         {
           if (_selectedProject.HasUnsavedChanges)
           {
-            this.SaveProject(out bool savingSuccess); // first save
-            allowNewSelectedProject = !savingSuccess; // only allow switch if saving was successful
+            this.SaveProject(out bool savingSuccess, false); // first save
+            allowNewSelectedProject = savingSuccess; // only allow switch if saving was successful
           }
         }
 

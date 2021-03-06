@@ -47,7 +47,12 @@ namespace HassKnxConfigTool.Core.Model
       }
     }
 
-    #region Selection logic
+    #region Tree logic
+    /// <summary>
+    /// Is Expanded Property indicates whether the tree node is expanded.
+    /// </summary>
+    public abstract bool IsExpanded { get; set; }
+   
     private bool isSelected;
     /// <summary>
     /// Identifies if this layer is selected.
@@ -89,6 +94,14 @@ namespace HassKnxConfigTool.Core.Model
           SelectedItemChanged?.Invoke(null, _selectedItem);
         }
       }
+    }
+
+    /// <summary>
+    /// Used to reset the selected item to null. 
+    /// </summary>
+    public static void ResetSelectedItem()
+    {
+      SelectedItem = null;
     }
     #endregion
 

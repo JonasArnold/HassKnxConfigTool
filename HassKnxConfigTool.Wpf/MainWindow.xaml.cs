@@ -65,7 +65,7 @@ namespace HassKnxConfigTool.Wpf
         switch (userDecision)
         {
           case MessageBoxResult.Yes:
-            this.ProjectsVM.SaveProject(out bool savingSuccess);
+            this.ProjectsVM.SaveProject(out bool savingSuccess, true);
             e.Cancel = !savingSuccess;  // cancel closing if unsuccessful saving
             break;
           case MessageBoxResult.Cancel:

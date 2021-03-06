@@ -23,30 +23,14 @@ namespace HassKnxConfigTool.Core.Serializing
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
     {
       var jsonObject = JObject.Load(reader);
-      var device = default(IDevice);
-      switch (jsonObject["Type"].Value<int>())
+      IDevice device = (jsonObject["Type"].Value<int>()) switch  // EXTEND_DEVICETYPE
       {
-        case (int)DeviceType.Light:
-          device = new Light();
-          break;
-
-        case (int)DeviceType.BinarySensor:
-          device = new BinarySensor();
-          break;
-
-        case (int)DeviceType.Scene:
-          // TODO
-          break;
-
-        case (int)DeviceType.Switch:
-          device = new Switch();
-          break;
-
-        default:
-        case (int)DeviceType.None:
-          throw new JsonReaderException($"Cannot deserialize device type {jsonObject["Type"].Value<int>()}.");
-      }
-
+        (int)DeviceType.Light => new Light(),
+        (int)DeviceType.BinarySensor => new BinarySensor(),
+        (int)DeviceType.Scene => new Scene(),
+        (int)DeviceType.Switch => new Switch(),
+        _ => throw new JsonReaderException($"Cannot deserialize device type {jsonObject["Type"].Value<int>()}."),
+      };
       serializer.Populate(jsonObject.CreateReader(), device);
       return device;
     }

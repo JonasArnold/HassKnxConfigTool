@@ -19,7 +19,7 @@ namespace HassKnxConfigTool.Wpf.Converters
 
       if (value is DeviceType deviceType)
       {
-        path += deviceType switch
+        path += deviceType switch  // EXTEND_DEVICETYPE
         {
           DeviceType.Light => "lightbulb.png",
           DeviceType.Switch => "toggle.png",
