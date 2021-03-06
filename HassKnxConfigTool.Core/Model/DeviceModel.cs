@@ -1,4 +1,5 @@
 ﻿using Common.DeviceTypes;
+using HassKnxConfigTool.Core.Serializing;
 using Newtonsoft.Json;
 using System;
 
@@ -6,6 +7,7 @@ namespace HassKnxConfigTool.Core.Model
 {
   [Serializable]
 #pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
+  [JsonConverter(typeof(LayerConverter))]
   public class DeviceModel : BaseLayer, IEquatable<DeviceModel>, IEquatable<string>
 #pragma warning restore CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
   {
@@ -14,9 +16,16 @@ namespace HassKnxConfigTool.Core.Model
     {
     }
 
+    /// <summary>
+    /// Constructor to initialize from deserialization.
+    /// </summary>
+    public DeviceModel(ILayer parentLayer, int depth, string myId)
+  : base(parentLayer, depth, myId)
+    {
+    }
+
     [JsonConverter(typeof(DeviceConverter))] // using a specific converter to enable deserialization to instanciate correct implementation of interface
     public IDevice Device { get; set; }
-
 
     #region IEquatable members
     public bool Equals(DeviceModel other)

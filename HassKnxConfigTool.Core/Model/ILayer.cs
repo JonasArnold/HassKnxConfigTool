@@ -17,5 +17,15 @@
     /// 0 is the top level layer, ...
     /// </summary>
     int Depth { get; }
+
+    /// <summary>
+    /// Parent layer
+    /// </summary>
+    ILayer Parent { get; }
+
+    /// <summary>
+    /// Id of the parent, used for serialization/deserialization.
+    /// </summary>
+    string ParentId { get; }
   }
 }

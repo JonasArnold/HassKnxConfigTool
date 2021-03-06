@@ -1,4 +1,5 @@
 ﻿using Common.Mvvm;
+using HassKnxConfigTool.Core.Serializing;
 using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;

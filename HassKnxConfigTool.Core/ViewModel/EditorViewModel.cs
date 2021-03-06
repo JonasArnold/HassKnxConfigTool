@@ -25,7 +25,10 @@ namespace HassKnxConfigTool.Core.ViewModel
       this.InitEnumValues();
       this.uiService = uiService;
       this.projectChangedNotifier = projectChangedNotifier;
+
+      // event registration
       this.projectChangedNotifier.SelectedProjectChanged += OnSelectedProjectChanged;
+      BaseLayer.SelectedItemChanged += OnSelectedItemChanged; 
     }
 
     private void OnSelectedProjectChanged(object sender, ProjectModel e)
@@ -37,19 +40,37 @@ namespace HassKnxConfigTool.Core.ViewModel
       }
     }
 
+    private void OnSelectedItemChanged(object sender, object newItem)
+    {
+      this.SwitchPropertiesViews(newItem);
+      OnPropertyChanged(nameof(Layers));
+      OnPropertyChanged(nameof(CanCollapse));
+      OnPropertyChanged(nameof(CanExpand));
+      OnPropertyChanged(nameof(CanAddLayer));
+      OnPropertyChanged(nameof(CanAddSubLayer));
+      OnPropertyChanged(nameof(CanAddDevice));
+      OnPropertyChanged(nameof(CanRemoveLayer));
+      OnPropertyChanged(nameof(CanRemoveDevice));
+    }
+
     #region Commands
     private void WireCommands()
     {
+      // Business Commands
       AddDeviceCommand = new RelayCommand(AddDevice);
       RemoveDeviceCommand = new RelayCommand(RemoveDevice);
       AddLayerCommand = new RelayCommand(AddLayer);
       AddSubLayerCommand = new RelayCommand(AddSubLayer);
-      SelectedItemChangedCommand = new RelayCommand<object>((o) => SelectedItemChanged(o));
       RemoveLayerCommand = new RelayCommand(RemoveLayer);
+
+      // Tree View Control
+      ExpandCommand = new RelayCommand(() => Expand(BaseLayer.SelectedItem as LayerModel));
+      CollapseCommand = new RelayCommand(() => Collapse(BaseLayer.SelectedItem as LayerModel));
     }
 
+    #region Business Commands
     public RelayCommand AddDeviceCommand { get; private set; }
-    public bool CanAddDevice => this.SelectedItemIsLayerAndBelowMaxDepth && string.IsNullOrEmpty(this.NewDeviceName) == false;
+    public bool CanAddDevice => SelectedItemIsLayerAndBelowMaxDepth && string.IsNullOrEmpty(this.NewDeviceName) == false;
     public void AddDevice()
     {
       IDevice newDevice = this.SelectedDeviceType switch  // EXTEND_DEVICETYPES
@@ -58,15 +79,16 @@ namespace HassKnxConfigTool.Core.ViewModel
         DeviceType.Light => new Light(this.NewDeviceName),
         DeviceType.Switch => new Common.DeviceTypes.Switch(this.NewDeviceName),
         DeviceType.BinarySensor => new BinarySensor(this.NewDeviceName),
-        _ => throw new Exception($"Cannot add Device with type {this.SelectedDeviceType}."),
+        _ => throw new ImplementationException($"Cannot add Device with type {this.SelectedDeviceType}."),
       };
 
       // create new device model
-      var currentLayer = SelectedItem as LayerModel;
+      var currentLayer = BaseLayer.SelectedItem as LayerModel;
       DeviceModel d = new DeviceModel(currentLayer)
       {
         Name = this.NewDeviceName,
-        Device = newDevice
+        Device = newDevice,
+        IsSelected = true  // select newly added device
       };
       this.NewDeviceName = "";  // remove current text
 
@@ -78,11 +100,13 @@ namespace HassKnxConfigTool.Core.ViewModel
     }
 
     public RelayCommand RemoveDeviceCommand { get; private set; }
-    public bool CanRemoveDevice => this.SelectedItemIsDevice;
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Is bound to UI")]
+    public bool CanRemoveDevice => SelectedItemIsDevice;
     public void RemoveDevice()
     {
       // remove device for max. depth of 3
-      string idToRemove = ((DeviceModel)SelectedItem).Id;
+      string idToRemove = ((DeviceModel)BaseLayer.SelectedItem).Id;
 
       // use recursive helper method to remove layer
       var successfullyRemoved = LayerHelpers.FindAndRemoveDevice(idToRemove, this.Layers);
@@ -98,7 +122,9 @@ namespace HassKnxConfigTool.Core.ViewModel
       // create new primary layer (null => primary layer)
       LayerModel l = new LayerModel(null)
       {
-        Name = NewLayerName
+        Name = NewLayerName,
+        IsExpanded = true, // auto expand newly added layer
+        IsSelected = true  // select newly added layer
       };
       NewLayerName = "";  // remove current text
 
@@ -109,49 +135,72 @@ namespace HassKnxConfigTool.Core.ViewModel
     }
 
     public RelayCommand AddSubLayerCommand { get; private set; }
-    public bool CanAddSubLayer => this.SelectedItemIsLayerAndBelowMaxDepth && string.IsNullOrEmpty(NewSubLayerName) == false;
+    public bool CanAddSubLayer => SelectedItemIsLayerAndBelowMaxDepth && string.IsNullOrEmpty(NewSubLayerName) == false;
     public void AddSubLayer()
     {
       // create new sub layer
-      var currentLayer = this.SelectedItem as LayerModel;
+      var currentLayer = BaseLayer.SelectedItem as LayerModel;
       LayerModel sl = new LayerModel(currentLayer)
       {
-        Name = NewSubLayerName
+        Name = NewSubLayerName,
+        IsExpanded = true, // auto expand newly added layer
+        IsSelected = true  // select newly added layer
       };
       NewSubLayerName = "";  // remove current text
 
       // add newly created sub layer to sublayers
       currentLayer.SubLayers.Add(sl);
       OnPropertyChanged(nameof(NewSubLayerName));
-      OnPropertyChanged(nameof(SelectedItem));
+      OnPropertyChanged(nameof(BaseLayer.SelectedItem));
       OnPropertyChanged(nameof(Layers));
       this.SetUnsavedChanges(true);
     }
 
     public RelayCommand RemoveLayerCommand { get; private set; }
-    public bool CanRemoveLayer => this.SelectedItemIsLayer;
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Is bound to UI")]
+    public bool CanRemoveLayer => SelectedItemIsLayer;
     public void RemoveLayer()
     {
       // remove device for max. depth of 3
-      string idToRemove = ((LayerModel)SelectedItem).Id;
+      string idToRemove = ((LayerModel)BaseLayer.SelectedItem).Id;
 
       // use recursive helper method to remove layer
       var successfullyRemoved = LayerHelpers.FindAndRemoveLayer(idToRemove, this.Layers);
       Debug.WriteLine($"FindAndRemoveLayer Success={successfullyRemoved}");
 
-      OnPropertyChanged(nameof(SelectedItem));
       OnPropertyChanged(nameof(Layers));
       this.SetUnsavedChanges(true);
     }
+    #endregion
 
-    public RelayCommand<object> SelectedItemChangedCommand { get; private set; }
-    private void SelectedItemChanged(object arg)
+    #region Tree View Control Commands  
+    public RelayCommand ExpandCommand { get; private set; }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Is bound to UI")]
+    public bool CanExpand => SelectedItemIsLayer;
+    public void Expand(LayerModel layer)
     {
-      if (arg is LayerModel or DeviceModel)
+      layer.IsExpanded = true;
+      foreach (var item in layer.SubLayers)
       {
-        this.SelectedItem = arg;
+        Expand(item);
       }
     }
+
+    public RelayCommand CollapseCommand { get; private set; }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Is bound to UI")]
+    public bool CanCollapse => SelectedItemIsLayer;
+    public void Collapse(LayerModel layer)
+    {
+      layer.IsExpanded = false;
+      foreach (var item in layer.SubLayers)
+      {
+        Collapse(item);
+      }
+    }
+    #endregion
 
     #endregion
 
@@ -163,23 +212,7 @@ namespace HassKnxConfigTool.Core.ViewModel
       set
       {
         _layers = value;
-        OnPropertyChanged(nameof(Layers));
-      }
-    }
-
-    private object _selectedItem;
-    public object SelectedItem
-    {
-      get { return _selectedItem; }
-      set
-      {
-        _selectedItem = value;
-        this.SwitchPropertiesViews(this.SelectedItem);
-        OnPropertyChanged(nameof(CanAddLayer));
-        OnPropertyChanged(nameof(CanAddSubLayer));
-        OnPropertyChanged(nameof(CanAddDevice));
-        OnPropertyChanged(nameof(CanRemoveLayer));
-        OnPropertyChanged(nameof(CanRemoveDevice));
+        OnPropertyChanged(nameof(Layers)); 
       }
     }
 
@@ -340,19 +373,19 @@ namespace HassKnxConfigTool.Core.ViewModel
       OnPropertyChanged(nameof(this.DevicePropertiesView));
     }
 
-    private bool SelectedItemIsDevice
+    private static bool SelectedItemIsDevice
     {
-      get { return this.SelectedItem != null && this.SelectedItem is DeviceModel; }
+      get { return BaseLayer.SelectedItem != null && BaseLayer.SelectedItem is DeviceModel; }
     }
 
-    private bool SelectedItemIsLayer
+    private static bool SelectedItemIsLayer
     {
-      get { return this.SelectedItem != null && this.SelectedItem is LayerModel; }
+      get { return BaseLayer.SelectedItem != null && BaseLayer.SelectedItem is LayerModel; }
     }
 
-    private bool SelectedItemIsLayerAndBelowMaxDepth
+    private static bool SelectedItemIsLayerAndBelowMaxDepth
     {
-      get { return this.SelectedItemIsLayer && (this.SelectedItem as LayerModel).Depth < Constants.MaxLayerDepth; }
+      get { return SelectedItemIsLayer && (BaseLayer.SelectedItem as LayerModel).Depth < Constants.MaxLayerDepth; }
     }
 
     #endregion

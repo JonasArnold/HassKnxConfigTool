@@ -47,6 +47,7 @@ namespace Common.Mvvm
     ///<returns>
     ///true if this command can be executed; otherwise, false.
     ///</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>")]
     public bool CanExecute(object parameter)
     {
       return _canExecute == null ? true : _canExecute((bool)parameter);
@@ -55,7 +56,18 @@ namespace Common.Mvvm
     ///<summary>
     ///Occurs when changes occur that affect whether or not the command should execute.
     ///</summary>
-    public event EventHandler CanExecuteChanged;
+    event EventHandler ICommand.CanExecuteChanged
+    {
+      add
+      {
+        // not used
+      }
+
+      remove
+      {
+        // not used
+      }
+    }
 
     ///<summary>
     ///Defines the method to be called when the command is invoked.
@@ -100,11 +112,9 @@ namespace Common.Mvvm
       _execute = execute ?? throw new ArgumentNullException(nameof(execute));
       _canExecute = canExecute;
     }
-
     #endregion
 
     #region ICommand Members
-
     ///<summary>
     ///Defines the method that determines whether the command can execute in its current state.
     ///</summary>
@@ -112,6 +122,7 @@ namespace Common.Mvvm
     ///<returns>
     ///true if this command can be executed; otherwise, false.
     ///</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0075:Simplify conditional expression", Justification = "<Pending>")]
     public bool CanExecute(object parameter)
     {
       return _canExecute == null ? true : _canExecute((T)parameter);
@@ -120,7 +131,19 @@ namespace Common.Mvvm
     ///<summary>
     ///Occurs when changes occur that affect whether or not the command should execute.
     ///</summary>
-    public event EventHandler CanExecuteChanged;
+    event EventHandler ICommand.CanExecuteChanged
+    {
+      add
+      {
+        // not used
+      }
+
+      remove
+      {
+        // not used
+      }
+    }
+
 
     ///<summary>
     ///Defines the method to be called when the command is invoked.

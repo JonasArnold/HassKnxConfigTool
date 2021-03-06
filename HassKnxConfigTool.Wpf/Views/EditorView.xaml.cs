@@ -1,4 +1,4 @@
-﻿using System;
+﻿using HassKnxConfigTool.Core.Model;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;

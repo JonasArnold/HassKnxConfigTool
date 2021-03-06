@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
-namespace HassKnxConfigTool.Core
+namespace HassKnxConfigTool.Core.Serializing
 {
   /// <summary>
   /// Custom JsonConverter to enable deserialization of Interface IDevice.

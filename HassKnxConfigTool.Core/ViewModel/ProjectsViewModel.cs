@@ -50,6 +50,13 @@ namespace HassKnxConfigTool.Core.ViewModel
     public bool CanAddProject => string.IsNullOrEmpty(this.NewProjectName) == false;
     public void AddProject()
     {
+      // check if a project with this name already exists
+      if(this.Projects.Any(p => p.Name == this.NewProjectName))
+      {
+        this.uiService.DisplayBottomMessage(MessageSeverity.Warning, $"Project with name {this.NewProjectName} already exists");
+        return;
+      }
+
       ProjectModel p = new ProjectModel
       {
         Name = this.NewProjectName
@@ -58,6 +65,8 @@ namespace HassKnxConfigTool.Core.ViewModel
       this.NewProjectName = string.Empty;
 
       this.Projects.Add(p);
+      this.SelectedProject = p;
+      this.uiService.DisplayBottomMessage(MessageSeverity.Success, $"Project {p.Name} was added successfully.");
     }
 
 

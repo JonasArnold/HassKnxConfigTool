@@ -41,7 +41,10 @@ namespace HassKnxConfigTool.Core
     private static void ExtractDevicesAndGenerateConfigOfType<T>(ICollection<LayerModel> layers, string fileOutputLocation) where T : IDevice
     {
       var listOfDevices = ExtractDevicesOfType<T>(layers);
-      KnxConfigGenerator.GenerateConfigFile(listOfDevices, fileOutputLocation);
+      if (listOfDevices != null && listOfDevices.Count > 0)
+      {
+        KnxConfigGenerator.GenerateConfigFile(listOfDevices, fileOutputLocation);
+      }
     }
 
     /// <summary>

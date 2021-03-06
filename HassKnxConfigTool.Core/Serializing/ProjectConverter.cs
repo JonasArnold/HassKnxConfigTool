@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
-namespace HassKnxConfigTool.Core
+namespace HassKnxConfigTool.Core.Serializing
 {
   /// <summary>
   /// Project converter.
@@ -22,7 +22,6 @@ namespace HassKnxConfigTool.Core
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
     {
       var jsonObject = JObject.Load(reader);
-      var project = default(ProjectModel);
       string projectName = jsonObject.ContainsKey("Name") ? jsonObject["Name"].Value<string>() : ""; // extract project name if found
 
       // if the DataVersion cannot be found in the file => cannot import
@@ -40,7 +39,7 @@ namespace HassKnxConfigTool.Core
 
       // extend here if there are newer DataVersions => Enable backwards compatibility
 
-      project = new ProjectModel();
+      var project = new ProjectModel();
       serializer.Populate(jsonObject.CreateReader(), project);
       return project;
     }
