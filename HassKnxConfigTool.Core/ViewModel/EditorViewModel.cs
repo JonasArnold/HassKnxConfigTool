@@ -79,6 +79,7 @@ namespace HassKnxConfigTool.Core.ViewModel
         DeviceType.Light => new Light(this.NewDeviceName),
         DeviceType.Switch => new Common.DeviceTypes.Switch(this.NewDeviceName),
         DeviceType.BinarySensor => new BinarySensor(this.NewDeviceName),
+        DeviceType.Scene => new Scene(this.NewDeviceName),
         _ => throw new ImplementationException($"Cannot add Device with type {this.SelectedDeviceType}."),
       };
 
@@ -362,6 +363,7 @@ namespace HassKnxConfigTool.Core.ViewModel
           DeviceType.Light => (Light)device.Device,
           DeviceType.Switch => (Common.DeviceTypes.Switch)device.Device,
           DeviceType.BinarySensor => (BinarySensor)device.Device,
+          DeviceType.Scene => (Scene)device.Device,
           _ => throw new ImplementationException("Newly selected device type has no view assigned."),
         };
 

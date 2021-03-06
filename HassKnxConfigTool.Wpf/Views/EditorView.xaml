@@ -37,6 +37,9 @@
         <DataTemplate DataType="{x:Type devicetypes:BinarySensor}">
             <local:BinarySensorDeviceView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type devicetypes:Scene}">
+            <local:SceneDeviceView />
+        </DataTemplate>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>

@@ -28,6 +28,7 @@ namespace HassKnxConfigTool.Core
       ExtractDevicesAndGenerateConfigOfType<Light>(layers, $"{outputFolder}lights{Constants.ExportFilesExtension}");
       ExtractDevicesAndGenerateConfigOfType<Switch>(layers, $"{outputFolder}switch{Constants.ExportFilesExtension}");
       ExtractDevicesAndGenerateConfigOfType<BinarySensor>(layers, $"{outputFolder}binary_sensor{Constants.ExportFilesExtension}");
+      ExtractDevicesAndGenerateConfigOfType<Scene>(layers, $"{outputFolder}scene{Constants.ExportFilesExtension}");
     }
 
     /// <summary>

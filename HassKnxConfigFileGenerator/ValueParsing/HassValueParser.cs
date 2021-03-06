@@ -12,6 +12,7 @@ namespace HassKnxConfigFileGenerator.ValueParsing
     private static readonly Dictionary<Type, IParser> TypeParserCombination = new Dictionary<Type, IParser>()
     {
       { typeof(string), new GenericToStringParser()},
+      { typeof(int), new GenericToStringParser() },
       { typeof(bool), new BooleanParser()},
       { typeof(GroupAddress), new GenericToStringParser()},
       { typeof(BinarySensorType), new FieldNameAttributeParser<BinarySensorType>()},
