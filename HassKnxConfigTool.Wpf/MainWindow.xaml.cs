@@ -2,7 +2,7 @@
 using HassKnxConfigTool.Core.ViewModel;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
 
@@ -21,7 +21,7 @@ namespace HassKnxConfigTool.Wpf
     public MainWindow()
     {
       InitializeComponent();
-      tbSoftwareVersion.Content = $"Version {GetAssemblyFileVersion()}";
+      tbSoftwareVersion.Content = $"Version {GetAssemblyVersion()}";
 
       // create view models
       this.ProjectsVM = new ProjectsViewModel(this);
@@ -85,11 +85,9 @@ namespace HassKnxConfigTool.Wpf
       }
     }
 
-    public static string GetAssemblyFileVersion()
+    public static string GetAssemblyVersion()
     {
-      System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-      FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo(assembly.Location);
-      return fileVersion.FileVersion;
+      return Assembly.GetEntryAssembly().GetName().Version.ToString();
     }
   }
 }

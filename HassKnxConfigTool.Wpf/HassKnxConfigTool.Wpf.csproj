@@ -10,8 +10,8 @@
     <Description>Simpliefies creation of KNX Configuration files for HomeAssistant.
 Rooms/Floors and Devices can be added in a Tree Structure. KNX Addresses and properties for HomeAssistant can be set from the UI.</Description>
     <PackageIcon>compare.png</PackageIcon>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.1</FileVersion>
+    <AssemblyVersion>1.0.0.3</AssemblyVersion>
+    <FileVersion>1.0.0.3</FileVersion>
     <Company />
     <ApplicationIcon>compare.ico</ApplicationIcon>
   </PropertyGroup>
