@@ -13,6 +13,7 @@ Rooms/Floors and Devices can be added in a Tree Structure. KNX Addresses and pro
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.1</FileVersion>
     <Company />
+    <ApplicationIcon>compare.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,9 +36,9 @@ Rooms/Floors and Devices can be added in a Tree Structure. KNX Addresses and pro
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\compare.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
+    <Content Include="Assets\compare.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Resource Include="Assets\device_hub.png" />
     <Resource Include="Assets\flash.png" />
     <Resource Include="Assets\layer.png" />
