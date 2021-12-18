@@ -38,7 +38,7 @@ namespace Common.DeviceTypes
     public override string Name
     {
       get { return this.name; }
-      set { this.name = value; OnPropertyChanged(nameof(this.Name)); OnAnyPropertyChanged(); }
+      set { this.name = Helpers.StringHelpers.NormalizeString(value); OnPropertyChanged(nameof(this.Name)); OnAnyPropertyChanged(); }
     }
 
     private GroupAddress address;

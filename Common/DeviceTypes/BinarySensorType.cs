@@ -3,7 +3,7 @@
 namespace Common.DeviceTypes
 {
   /// <summary>
-  /// Binary sensor class types from:
+  /// Binary sensor device class types from:
   /// https://www.home-assistant.io/integrations/binary_sensor/
   /// </summary>
   public enum BinarySensorType
