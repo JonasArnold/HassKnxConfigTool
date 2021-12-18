@@ -25,10 +25,11 @@ namespace HassKnxConfigTool.Core
       }
 
       // Generate config of every single device types (EXTEND_DEVICETYPES)
-      ExtractDevicesAndGenerateConfigOfType<Light>(layers, $"{outputFolder}lights{Constants.ExportFilesExtension}");
+      ExtractDevicesAndGenerateConfigOfType<Light>(layers, $"{outputFolder}light{Constants.ExportFilesExtension}");
       ExtractDevicesAndGenerateConfigOfType<Switch>(layers, $"{outputFolder}switch{Constants.ExportFilesExtension}");
       ExtractDevicesAndGenerateConfigOfType<BinarySensor>(layers, $"{outputFolder}binary_sensor{Constants.ExportFilesExtension}");
       ExtractDevicesAndGenerateConfigOfType<Scene>(layers, $"{outputFolder}scene{Constants.ExportFilesExtension}");
+      ExtractDevicesAndGenerateConfigOfType<Cover>(layers, $"{outputFolder}cover{Constants.ExportFilesExtension}");
     }
 
     /// <summary>

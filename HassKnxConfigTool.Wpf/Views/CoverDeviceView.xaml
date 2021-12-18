@@ -1,0 +1,160 @@
+﻿<UserControl x:Class="HassKnxConfigTool.Wpf.Views.CoverDeviceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:HassKnxConfigTool.Wpf.Views"
+             xmlns:helpers="clr-namespace:HassKnxConfigTool.Wpf.Helpers"
+             xmlns:converters="clr-namespace:HassKnxConfigTool.Wpf.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="240" d:DesignWidth="1400">
+    <UserControl.Resources>
+        <converters:DisplayNameAttributeConverter x:Key="displayNameConverter"/>
+        <converters:DescriptionAttributeConverter x:Key="descConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="0*" />
+            <ColumnDefinition Width="1.6*" />
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+
+        <!-- Name -->
+        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Name in HA:</TextBlock>
+        <TextBox Grid.Row="0" Grid.Column="1" Height="25" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <!-- Cover type -->
+        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Cover Type:</TextBlock>
+        <ComboBox  Grid.Row="1" Grid.Column="1" Height="25" ItemsSource="{Binding CoverTypeValues}" SelectedItem="{Binding SelectedCoverType}">
+            <ComboBox.ItemTemplateSelector>
+                <helpers:ComboBoxItemTemplateSelector>
+                    <helpers:ComboBoxItemTemplateSelector.SelectedItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Converter={StaticResource displayNameConverter}}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </helpers:ComboBoxItemTemplateSelector.SelectedItemTemplate>
+                    <helpers:ComboBoxItemTemplateSelector.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontWeight="Bold" Text="{Binding Converter={StaticResource displayNameConverter}}"/>
+                                <TextBlock Text=" { "/>
+                                <TextBlock Text="{Binding Converter={StaticResource descConverter}}"/>
+                                <TextBlock Text=" }"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </helpers:ComboBoxItemTemplateSelector.ItemTemplate>
+                </helpers:ComboBoxItemTemplateSelector>
+            </ComboBox.ItemTemplateSelector>
+        </ComboBox>
+
+        <!-- Move Long Address -->
+        <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Move Long Address:</TextBlock>
+        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Height="25">
+            <TextBox Width="30" Text="{Binding MoveLongAddress.MainGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding MoveLongAddress.MiddleGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding MoveLongAddress.SubGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+        
+
+        <!-- Move Short Address -->
+        <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Move Short Address:</TextBlock>
+        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Height="25">
+            <TextBox Width="30" Text="{Binding MoveShortAddress.MainGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding MoveShortAddress.MiddleGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding MoveShortAddress.SubGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <!-- Stop Address -->
+        <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center">Stop Address:</TextBlock>
+        <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" Height="25">
+            <TextBox Width="30" Text="{Binding StopAddress.MainGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding StopAddress.MiddleGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding StopAddress.SubGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        
+        <!-- Travelling Time -->
+        <TextBlock Grid.Row="4" Grid.Column="3" VerticalAlignment="Center" Margin="10 0 0 0">Travelling Time [s]:</TextBlock>
+        <StackPanel Grid.Row="4" Grid.Column="4" Orientation="Horizontal" Height="25">
+            <TextBox Width="50" Text="{Binding TravellingTimeUp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock VerticalAlignment="Center" Margin="3 0 50 0"> Up</TextBlock>
+            <TextBox Width="50" Text="{Binding TravellingTimeDown, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock VerticalAlignment="Center" Margin="3 0 10 0"> Down</TextBlock>
+        </StackPanel>
+
+        <!-- Position Address -->
+        <TextBlock Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" Margin="10 0 0 0">Position Address:</TextBlock>
+        <StackPanel Grid.Row="1" Grid.Column="4" Orientation="Horizontal" Height="25">
+            <TextBox Width="30" Text="{Binding PositionAddress.MainGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding PositionAddress.MiddleGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding PositionAddress.SubGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <!-- Position State Address -->
+        <TextBlock Grid.Row="2" Grid.Column="3" VerticalAlignment="Center" Margin="10 0 0 0">Position State Address:</TextBlock>
+        <StackPanel Grid.Row="2" Grid.Column="4" Orientation="Horizontal" Height="25">
+            <TextBox Width="30" Text="{Binding PositionStateAddress.MainGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding PositionStateAddress.MiddleGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding PositionStateAddress.SubGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <!-- Invert Position -->
+        <TextBlock Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" Margin="10 0 0 0">Position inverted:</TextBlock>
+        <CheckBox Grid.Row="3" Grid.Column="4" VerticalAlignment="Center" IsChecked="{Binding InvertedPosition, Mode=TwoWay}">Inverted</CheckBox>
+
+        
+
+
+        <!-- Angle enabled -->
+        <TextBlock Grid.Row="0" Grid.Column="5" VerticalAlignment="Center" Margin="10 0 0 0">Angle:</TextBlock>
+        <CheckBox Grid.Row="0" Grid.Column="6" VerticalAlignment="Center" IsChecked="{Binding AngleEnabled, Mode=TwoWay}">Enabled</CheckBox>
+
+        <!-- Angle Address -->
+        <TextBlock Grid.Row="1" Grid.Column="5" VerticalAlignment="Center" Margin="10 0 0 0">Angle Address:</TextBlock>
+        <StackPanel Grid.Row="1" Grid.Column="6" Orientation="Horizontal" Height="25" IsEnabled="{Binding AngleEnabled}">
+            <TextBox Width="30" Text="{Binding AngleAddress.MainGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding AngleAddress.MiddleGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding AngleAddress.SubGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <!-- Angle State Address -->
+        <TextBlock Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" Margin="10 0 0 0">Angle State Address:</TextBlock>
+        <StackPanel Grid.Row="2" Grid.Column="6" Orientation="Horizontal" Height="25" IsEnabled="{Binding AngleEnabled}">
+            <TextBox Width="30" Text="{Binding AngleStateAddress.MainGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding AngleStateAddress.MiddleGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock> /</TextBlock>
+            <TextBox Width="30" Text="{Binding AngleStateAddress.SubGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <!-- Invert Angle -->
+        <TextBlock Grid.Row="3" Grid.Column="5" VerticalAlignment="Center" Margin="10 0 0 0">Angle inverted:</TextBlock>
+        <CheckBox Grid.Row="3" Grid.Column="6" VerticalAlignment="Center" IsEnabled="{Binding AngleEnabled}"
+                  IsChecked="{Binding InvertedAngle, Mode=TwoWay}">Inverted</CheckBox>
+    </Grid>
+</UserControl>

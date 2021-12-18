@@ -24,6 +24,7 @@ Rooms/Floors and Devices can be added in a Tree Structure. KNX Addresses and pro
     <None Remove="Assets\lightbulb.png" />
     <None Remove="Assets\palette.png" />
     <None Remove="Assets\power-off.png" />
+    <None Remove="Assets\sensor_window.png" />
     <None Remove="Assets\toggle.png" />
     <None Include="Assets\compare.png">
       <Pack>True</Pack>
@@ -45,6 +46,7 @@ Rooms/Floors and Devices can be added in a Tree Structure. KNX Addresses and pro
     <Resource Include="Assets\lightbulb.png" />
     <Resource Include="Assets\palette.png" />
     <Resource Include="Assets\power-off.png" />
+    <Resource Include="Assets\sensor_window.png" />
     <Resource Include="Assets\toggle.png" />
   </ItemGroup>
 
@@ -52,6 +54,9 @@ Rooms/Floors and Devices can be added in a Tree Structure. KNX Addresses and pro
     <Page Update="Views\BinarySensorDeviceView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\CoverDeviceView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\SceneDeviceView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>

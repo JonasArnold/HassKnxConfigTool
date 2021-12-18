@@ -29,6 +29,7 @@ namespace HassKnxConfigTool.Core.Serializing
         (int)DeviceType.BinarySensor => new BinarySensor(),
         (int)DeviceType.Scene => new Scene(),
         (int)DeviceType.Switch => new Switch(),
+        (int)DeviceType.Cover => new Cover(),
         _ => throw new JsonReaderException($"Cannot deserialize device type {jsonObject["Type"].Value<int>()}."),
       };
       serializer.Populate(jsonObject.CreateReader(), device);

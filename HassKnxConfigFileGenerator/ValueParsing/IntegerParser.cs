@@ -1,10 +1,10 @@
 ﻿namespace HassKnxConfigFileGenerator.ValueParsing
 {
-  internal class GenericToStringParser : IParser
+  internal class IntegerParser : IParser
   {
     public string Parse(object value)
     {
-      return $"'{value}'";
+      return value.ToString();
     }
   }
 }

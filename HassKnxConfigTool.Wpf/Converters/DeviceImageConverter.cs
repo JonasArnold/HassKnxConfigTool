@@ -1,5 +1,4 @@
 ﻿using Common.DeviceTypes;
-using HassKnxConfigTool.Core.Model;
 using System;
 using System.Globalization;
 using System.Windows.Data;
@@ -25,6 +24,7 @@ namespace HassKnxConfigTool.Wpf.Converters
           DeviceType.Switch => "toggle.png",
           DeviceType.BinarySensor => "power-off.png",
           DeviceType.Scene => "palette.png",
+          DeviceType.Cover => "sensor_window.png",
           _ => "device_hub.png",  // default device image
         };
       }

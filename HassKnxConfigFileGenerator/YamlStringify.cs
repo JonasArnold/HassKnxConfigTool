@@ -50,12 +50,12 @@ namespace HassKnxConfigFileGenerator
           // add line to config
           if (firstLine)
           {
-            instanceString += $"{haName}: '{parsedValue}'\n";  // TEST value.ToString defined?
+            instanceString += $"{haName}: {parsedValue}\n";  // TEST value.ToString defined?
             firstLine = false;
           }
           else
           {
-            instanceString += $"  {haName}: '{parsedValue}'\n";  // two spaces in front
+            instanceString += $"  {haName}: {parsedValue}\n";  // two spaces in front
           }
         }
         Debug.WriteLine($"PropertyName: {property.Name},\t HA Name: {haName},\t Value: {parsedValue}");

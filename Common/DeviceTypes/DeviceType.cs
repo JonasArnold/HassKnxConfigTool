@@ -17,6 +17,9 @@ namespace Common.DeviceTypes
     BinarySensor,
 
     [DisplayName("Scene")]
-    Scene
+    Scene,
+
+    [DisplayName("Cover")]
+    Cover
   }
 }

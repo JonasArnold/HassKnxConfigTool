@@ -17,7 +17,7 @@
     /// For each change of any models this number shall be incremented.
     /// Important for Serialization / Deserialization!
     /// </summary>
-    internal const int DataVersion = 1;
+    internal const int DataVersion = 2;
 
     /// <summary>
     /// Maximum layer depth of tree structure.

@@ -77,10 +77,11 @@ namespace HassKnxConfigTool.Core.ViewModel
       IDevice newDevice = this.SelectedDeviceType switch  // EXTEND_DEVICETYPES
       {
         // instantiate new device, always set default name
-        DeviceType.Light => new Light(this.NewDeviceName),
+        DeviceType.Light => new Common.DeviceTypes.Light(this.NewDeviceName),
         DeviceType.Switch => new Common.DeviceTypes.Switch(this.NewDeviceName),
-        DeviceType.BinarySensor => new BinarySensor(this.NewDeviceName),
-        DeviceType.Scene => new Scene(this.NewDeviceName),
+        DeviceType.BinarySensor => new Common.DeviceTypes.BinarySensor(this.NewDeviceName),
+        DeviceType.Scene => new Common.DeviceTypes.Scene(this.NewDeviceName),
+        DeviceType.Cover => new Common.DeviceTypes.Cover(this.NewDeviceName),
         _ => throw new ImplementationException($"Cannot add Device with type {this.SelectedDeviceType}."),
       };
 
@@ -363,10 +364,11 @@ namespace HassKnxConfigTool.Core.ViewModel
         this.DevicePropertiesView = device.Device.Type switch  // EXTEND_DEVICETYPES
         {
           // instantiate view
-          DeviceType.Light => (Light)device.Device,
+          DeviceType.Light => (Common.DeviceTypes.Light)device.Device,
           DeviceType.Switch => (Common.DeviceTypes.Switch)device.Device,
-          DeviceType.BinarySensor => (BinarySensor)device.Device,
-          DeviceType.Scene => (Scene)device.Device,
+          DeviceType.BinarySensor => (Common.DeviceTypes.BinarySensor)device.Device,
+          DeviceType.Scene => (Common.DeviceTypes.Scene)device.Device,
+          DeviceType.Cover => (Common.DeviceTypes.Cover)device.Device,
           _ => throw new ImplementationException("Newly selected device type has no view assigned."),
         };
 

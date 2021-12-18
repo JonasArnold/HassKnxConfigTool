@@ -12,7 +12,7 @@ namespace HassKnxConfigFileGenerator.ValueParsing
 
       if(fieldNameAttribute != null)
       {
-        return fieldNameAttribute.FieldName;
+        return $"'{fieldNameAttribute.FieldName}'";
       }
 
       //T item = (T)value;
